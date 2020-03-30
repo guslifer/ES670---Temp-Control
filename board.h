@@ -70,6 +70,4 @@
 
 
 
-
-
 #endif /* SOURCES_BOARD_H_ */
