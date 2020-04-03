@@ -37,38 +37,38 @@ void ledSwi_init(bool led1, bool led2, bool led3, bool led4) {
 /*Define se os pinos serao entrada (chave) ou saida (led)*/ 
 
     if(led1 == 1){
-        GPIOA_PDDR |= uiPort1MaskEnable
+        GPIOA_PDDR |= uiPin1MaskEnable
         ledSwi1 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPort1MaskDisable
+        GPIOA_PDDR &= uiPin1MaskDisable
         ledSwi1 = false;
     } 
 
     if(led2 == 1){
-        GPIOA_PDDR |= uiPort2MaskEnable
+        GPIOA_PDDR |= uiPin2MaskEnable
         ledSwi2 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPort2MaskDisable
+        GPIOA_PDDR &= uiPin2MaskDisable
         ledSwi2 = false;
     } 
 
     if(led3== 1){
-        GPIOA_PDDR |= uiPort4MaskEnable
+        GPIOA_PDDR |= uiPin4MaskEnable
         ledSwi3 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPort4MaskDisable
+        GPIOA_PDDR &= uiPin4MaskDisable
         ledSwi3 = false;
     } 
 
     if(led4 == 1){
-        GPIOA_PDDR |= uiPort5MaskEnable
+        GPIOA_PDDR |= uiPin5MaskEnable
         ledSwi4 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPort5MaskDisable
+        GPIOA_PDDR &= uiPin5MaskDisable
         ledSwi4 = false;
     } 
 
@@ -94,8 +94,8 @@ bool readSwitch(int n){
 
     switch(n){
         case 1: 
-        	if(ledSwi1 = false){
-	            if (uiPort1MaskEnable == GPIOA_PDIR & uiPort1MaskEnable){ 
+        	if(false == ledSwi1){
+	            if (uiPin1MaskEnable == GPIOA_PDIR & uiPin1MaskEnable){ 
 	                return true
 	            }
 	            else {
@@ -108,8 +108,8 @@ bool readSwitch(int n){
         break;
 
         case 2:
-        	if(ledSwi2 = false){ 
-	            if (uiPort2Mask == GPIOA_PDIR & uiPort2MaskEnable){ 
+        	if(false == ledSwi2){ 
+	            if (uiPin2Mask == GPIOA_PDIR & uiPin2MaskEnable){ 
 	                return true
 	            }
 	            else {
@@ -122,8 +122,8 @@ bool readSwitch(int n){
         break;
 
         case 3: 
-        	if(ledSwi3 = false){
-		        if (uiPort4Mask == GPIOA_PDIR & uiPort4MaskEnable){ 
+        	if(false == ledSwi3){
+		        if (uiPin4Mask == GPIOA_PDIR & uiPin4MaskEnable){ 
 		            return true
 		        }
 		        else {
@@ -136,8 +136,8 @@ bool readSwitch(int n){
 		break;
 
         case 4: 
-        	if(ledSwi4 = false){
-	            if (uiPort5Mask == GPIOA_PDIR & uiPort5MaskEnable){ 
+        	if(false == ledSwi4){
+	            if (uiPin5Mask == GPIOA_PDIR & uiPin5MaskEnable){ 
 	                return true
 	            }
 	            else {
@@ -171,12 +171,12 @@ void writeLED(int n, bool status){
     switch(n){
 
         case 1: 
-        	if(ledSwi1 = true){ 
+        	if(true == ledSwi1){ 
 	            if (status){ 
-	                GPIOA_PDOR |= uiPort1MaskEnable
+	                GPIOA_PDOR |= uiPin1MaskEnable
 	            }
 	            else {
-	                GPIOA_PDOR |= uiPort1MaskDisable
+	                GPIOA_PDOR |= uiPin1MaskDisable
 	            }
         	}
         	else{ 
@@ -185,12 +185,12 @@ void writeLED(int n, bool status){
         break;
 
         case 2: 
-        	if(ledSwi2 = true){
+        	if(true == ledSwi2){
 	            if (status){ 
-	                GPIOA_PDOR |= uiPort2MaskEnable
+	                GPIOA_PDOR |= uiPin2MaskEnable
 	            }
 	            else {
-	                GPIOA_PDOR |= uiPort2MaskDisable
+	                GPIOA_PDOR |= uiPin2MaskDisable
 	            }
 	        }
 	        else{ 
@@ -200,12 +200,12 @@ void writeLED(int n, bool status){
         break;
 
         case 3: 
-        	if(ledSwi3 = true){
+        	if(true == ledSwi3){
 	            if (status){ 
-	                GPIOA_PDOR |= uiPort4MaskEnable
+	                GPIOA_PDOR |= uiPin4MaskEnable
 	        	}
 	            else {
-	                GPIOA_PDOR |= uiPort4MaskDisable
+	                GPIOA_PDOR |= uiPin4MaskDisable
 	        	}
 	        }
 	        else{ 
@@ -214,12 +214,12 @@ void writeLED(int n, bool status){
         break;
 
         case 4: 
-        	if(ledSwi4 = true){
+        	if(true == ledSwi4){
 	            if (status){ 
-	                GPIOA_PDOR |= uiPort5MaskEnable
+	                GPIOA_PDOR |= uiPin5MaskEnable
 	            }
 	            else {
-	                GPIOA_PDOR |= uiPort5MaskDisable
+	                GPIOA_PDOR |= uiPin5MaskDisable
 	            }
 	        } 
 		    else{ 
@@ -244,8 +244,8 @@ void turnOnLED(int n);
     switch(n){
 
         case 1:  
-        	if(ledSwi1 = true){
-            	GPIOA_PSOR |= uiPort1MaskEnable
+        	if(true == ledSwi1){
+            	GPIOA_PSOR |= uiPin1MaskEnable
             } 
             else{ 
 	        		printf("Erro 3")
@@ -253,8 +253,8 @@ void turnOnLED(int n);
         break;
 
         case 2: 
-            if(ledSwi2 = true){
-            	GPIOA_PSOR |= uiPort2MaskEnable
+            if(true == ledSwi2){
+            	GPIOA_PSOR |= uiPin2MaskEnable
             } 
             else{ 
 	        		printf("Erro 3")
@@ -263,8 +263,8 @@ void turnOnLED(int n);
         break;
 
         case 3: 
-        	if(ledSwi3 = true){
-            	GPIOA_PSOR |= uiPort4MaskEnable
+        	if(true == ledSwi3){
+            	GPIOA_PSOR |= uiPin4MaskEnable
             }
             else{ 
             	printf("Erro 3")
@@ -272,8 +272,8 @@ void turnOnLED(int n);
         break;
 
         case 4: 
-        	if(ledSwi3 = true){
-            	GPIOA_PSOR |= uiPort5MaskEnable
+        	if(true == ledSwi4){
+            	GPIOA_PSOR |= uiPin5MaskEnable
             }
             else{ 
             	printf("Erro 3")
@@ -297,8 +297,8 @@ void turnOffLED(int n){
     switch(n){
 
         case 1:  
-        	if(ledSwi1 = true){
-            	GPIOA_PCOR |= uiPort1MaskDisable
+        	if(true == ledSwi1){
+            	GPIOA_PCOR |= uiPin1MaskDisable
             } 
             else{ 
 	        		printf("Erro 3")
@@ -306,8 +306,8 @@ void turnOffLED(int n){
         break;
 
         case 2: 
-            if(ledSwi2 = true){
-            	GPIOA_PCOR |= uiPort2MaskDisable
+            if(true == ledSwi2){
+            	GPIOA_PCOR |= uiPin2MaskDisable
             } 
             else{ 
 	        		printf("Erro 3")
@@ -316,8 +316,8 @@ void turnOffLED(int n){
         break;
 
         case 3: 
-        	if(ledSwi3 = true){
-            	GPIOA_PCOR |= uiPort4MaskDisable
+        	if(true == ledSwi3){
+            	GPIOA_PCOR |= uiPin4MaskDisable
             }
             else{ 
             	printf("Erro 3")
@@ -325,8 +325,8 @@ void turnOffLED(int n){
         break;
 
         case 4: 
-        	if(ledSwi3 = true){
-            	GPIOA_PCOR |= uiPort5MaskDisable
+        	if(true == ledSwi4){
+            	GPIOA_PCOR |= uiPin5MaskDisable
             }
             else{ 
             	printf("Erro 3")
@@ -353,8 +353,8 @@ void toggleLED(int n){
     switch(n){
 
         case 1:  
-        	if(ledSwi1 = true){
-            	GPIOA_PTOR |= uiPort1MaskEnable
+        	if(true == ledSwi1){
+            	GPIOA_PTOR |= uiPin1MaskEnable
             } 
             else{ 
 	        		printf("Erro 3")
@@ -362,8 +362,8 @@ void toggleLED(int n){
         break;
 
         case 2: 
-            if(ledSwi2 = true){
-            	GPIOA_PTOR |= uiPort2MaskEnable
+            if(true == ledSwi2){
+            	GPIOA_PTOR |= uiPin2MaskEnable
             } 
             else{ 
 	        		printf("Erro 3")
@@ -372,8 +372,8 @@ void toggleLED(int n){
         break;
 
         case 3: 
-        	if(ledSwi3 = true){
-            	GPIOA_PTOR |= uiPort4MaskEnable
+        	if(true == ledSwi3){
+            	GPIOA_PTOR |= uiPin4MaskEnable
             }
             else{ 
             	printf("Erro 3")
@@ -381,8 +381,8 @@ void toggleLED(int n){
         break;
 
         case 4: 
-        	if(ledSwi3 = true){
-            	GPIOA_PTOR |= uiPort5MaskEnable
+        	if(true == ledSwi4){
+            	GPIOA_PTOR |= uiPin5MaskEnable
             }
             else{ 
             	printf("Erro 3")

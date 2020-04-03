@@ -29,16 +29,16 @@
 /* Configuração dos set-up necessários para utilizar os Led/Switch 
 *  INICIO 
 */ 
-#define uiPort1MaskEnable       0x02
-#define uiPort1MaskDisable      0xFFFD
-#define uiPort2MaskEnable       0x04
-#define uiPort2MaskDisable      0xFFFB
-#define uiPort4MaskEnable       0x010
-#define uiPort4MaskDisable      0xFFEF
-#define uiPort5MaskEnable       0x020
-#define uiPort5MaskDisable      0xFFDF
-#define uiSetPinAsGPIO			0x100
-#define uiSetClockPort			0x0200
+#define uiPin1MaskEnable       0x02
+#define uiPin1MaskDisable      0xFFFD
+#define uiPin2MaskEnable       0x04
+#define uiPin2MaskDisable      0xFFFB
+#define uiPin4MaskEnable       0x010
+#define uiPin4MaskDisable      0xFFEF
+#define uiPin5MaskEnable       0x020
+#define uiPin5MaskDisable      0xFFDF
+#define uiSetPinAsGPIO		   0x100
+#define uiSetClockPort		   0x0200
 
 /* FIM das configurações dos set-up de Led/Switch*/
 
