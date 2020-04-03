@@ -8,7 +8,7 @@
 #########################################*/
 
 #include "ledSwi.h"
-
+#include "board.h"
 
 #include "fsl_clock_manager.h"
 #include "fsl_port_hal.h"
@@ -109,7 +109,7 @@ bool readSwitch(int n){
 
         case 2:
         	if(false == ledSwi2){ 
-	            if (uiPin2Mask == GPIOA_PDIR & uiPin2MaskEnable){ 
+	            if (uiPin2MaskEnable == GPIOA_PDIR & uiPin2MaskEnable){ 
 	                return true;
 	            }
 	            else {
@@ -123,7 +123,7 @@ bool readSwitch(int n){
 
         case 3: 
         	if(false == ledSwi3){
-		        if (uiPin4Mask == GPIOA_PDIR & uiPin4MaskEnable){ 
+		        if (uiPin4MaskEnable == GPIOA_PDIR & uiPin4MaskEnable){ 
 		            return true;
 		        }
 		        else {
@@ -137,7 +137,7 @@ bool readSwitch(int n){
 
         case 4: 
         	if(false == ledSwi4){
-	            if (uiPin5Mask == GPIOA_PDIR & uiPin5MaskEnable){ 
+	            if (uiPin5MaskEnable == GPIOA_PDIR & uiPin5MaskEnable){ 
 	                return true;
 	            }
 	            else {
