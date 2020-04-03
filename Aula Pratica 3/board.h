@@ -26,6 +26,25 @@
 #define BLUE_LED_PIN	         (uint32_t) 1u
 
 
+/* Configuração dos set-up necessários para utilizar os Led/Switch 
+*  INICIO 
+*/ 
+#define uiPort1MaskEnable       0x02
+#define uiPort1MaskDisable      0xFFFD
+#define uiPort2MaskEnable       0x04
+#define uiPort2MaskDisable      0xFFFB
+#define uiPort4MaskEnable       0x010
+#define uiPort4MaskDisable      0xFFEF
+#define uiPort5MaskEnable       0x020
+#define uiPort5MaskDisable      0xFFDF
+#define uiSetPinAsGPIO			0x100
+#define uiSetClockPort			0x0200
+
+/* FIM das configurações dos set-up de Led/Switch*/
+
+
+
+
 /* Configuração dos set-up para utilziar o LCD
  *
  * Quando LCD_RS = LCD_RS_HIGH => Registrador de dados é selecionados
