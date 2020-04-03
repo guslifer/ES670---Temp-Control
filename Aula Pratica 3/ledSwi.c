@@ -37,38 +37,38 @@ void ledSwi_init(bool led1, bool led2, bool led3, bool led4) {
 /*Define se os pinos serao entrada (chave) ou saida (led)*/ 
 
     if(led1 == 1){
-        GPIOA_PDDR |= uiPin1MaskEnable
+        GPIOA_PDDR |= uiPin1MaskEnable;
         ledSwi1 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPin1MaskDisable
+        GPIOA_PDDR &= uiPin1MaskDisable;
         ledSwi1 = false;
     } 
 
     if(led2 == 1){
-        GPIOA_PDDR |= uiPin2MaskEnable
+        GPIOA_PDDR |= uiPin2MaskEnable;
         ledSwi2 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPin2MaskDisable
+        GPIOA_PDDR &= uiPin2MaskDisable;
         ledSwi2 = false;
     } 
 
     if(led3== 1){
-        GPIOA_PDDR |= uiPin4MaskEnable
+        GPIOA_PDDR |= uiPin4MaskEnable;
         ledSwi3 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPin4MaskDisable
+        GPIOA_PDDR &= uiPin4MaskDisable;
         ledSwi3 = false;
     } 
 
     if(led4 == 1){
-        GPIOA_PDDR |= uiPin5MaskEnable
+        GPIOA_PDDR |= uiPin5MaskEnable;
         ledSwi4 = true;
     }
     else{ 
-        GPIOA_PDDR &= uiPin5MaskDisable
+        GPIOA_PDDR &= uiPin5MaskDisable;
         ledSwi4 = false;
     } 
 
@@ -209,7 +209,7 @@ void writeLED(int n, bool status){
 	        	}
 	        }
 	        else{ 
-        		printf("Erro 3")
+        		printf("Erro 3");
         	}
         break;
 
@@ -238,7 +238,7 @@ void writeLED(int n, bool status){
 /*
 /* Parametros de saida:     n/a                          
 /* **************************************************************************/
-void turnOnLED(int n);
+void turnOnLED(int n){ 
 
 
     switch(n){
@@ -281,6 +281,7 @@ void turnOnLED(int n);
         break;
 
     }
+}
 
 
 
