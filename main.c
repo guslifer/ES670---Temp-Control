@@ -1,71 +1,86 @@
-/* ***************************************************************** */
-/* File name:        main.c                                          */
-/* File description: File dedicated to the ES670 prototype projects  */
-/*                   involving the FRDM-KL25Z board together with is */
-/*                   daughter board containing more peripherals      */
-/*                                                                   */
-/*                   Processor MKL25Z128VLK4 characteristics         */
-/*                   48 MHz ARM Cortex-M0+ core                      */
-/*                   128 KB program flash memory                     */
-/*                   16 KB SRAM                                      */
-/*                   Voltage range: 1.71 to 3.6 V                    */
-/*                                                                   */
-/* Author name:      Rodrigo M Bacurau                               */
-/* Creation date:    26fev2020                                       */
-/* Revision date:    02mar2020                                       */
-/* ***************************************************************** */
-
-/* our includes */
-#include "util.h"
-#include "mcg.h"
-#include "ledrgb.h"
-#include "lcd.h"
+/* **************************************************************************** */
+/*                                                                              */
+/*   Nome do arquivo:        main.c                                             */
+/*                                                                              */
+/*   Descrição:              Arquivo de teste das funcoes criadas para          */
+/*                           lidar com entradas e saidas atraves dos            */
+/*                           LEDs e botoes do kit presente no laboratorio       */
+/*                                                                              */
+/*   Autores:                Gustavo Lino e Giácomo Dollevedo                   */
+/*   Criado em:              31/03/2020                                         */
+/*   Ultima revisão em:      03/04/2020                                         */
+/* **************************************************************************** */
 
 
-/* globals */
-static unsigned char cLedColor = 0;                 /* stores the current RGB led color */
+/* bibliotecas incluidas */
+#include "board.h"
+#include "ledSwi.h"
 
-/* ************************************************ */
-/* Method name:        boardInit                    */
-/* Method description: main board all needed        */
-/*                     initializations              */
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
-void boardInit(void)
+
+/* variaveis globais */
+static bool bConfig[4] = {false, false, false, true};
+
+
+/* **************************************************************************** */
+/* Nome do metodo:          boardInit                                           */
+/* Descrição:               Inicializa os parametros necessarios para o         */
+/*                          teste                                               */
+/*                                                                              */
+/* Parametros de entrada:   Quatro booleanos, entradas da inicializacao dos     */
+/*                          LEDs e botoes                                       */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
+void boardInit(bool led1, bool led2, bool led3, bool led4)
 {
-	/* fist of all, clock configuration and initialization */
-	mcg_clockInit();
 
-	/* RGB LED initialization */
-	ledrgb_init();
+    ledSwi_init(led1, led2, led3, led4);
+
 }
 
 
 
-/* ************************************************ */
-/* Method name:        main                         */
-/* Method description: system entry point           */
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* **************************************************************************** */
+/* Nome do metodo:          main                                                */
+/* Descrição:               Executa um teste de cada funcao implementada em     */
+/*                          ledSwi combinando as entradas de botoes e LEDs      */
+/*                                                                              */
+/* Parametros de entrada:   n/a                                                 */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
 int main(void)
 {
-	/* board initializations */
-	boardInit();
+    /* inicialização dos registradores */
+    boardInit(bConfig[0], bConfig[1], bConfig[2], bConfig[3]);
 
-	/* main loop */
-    while (1){
 
-		/* sets the RGB led color */
-        ledrgb_write(cLedColor);
+    /*  Acende o LED 4 do kit. Em seguida, aguarda a entrada de cada um
+    /*  dos botoes (em sequencia, do primeiro ao terceiro), alternando
+    /*  o estado do LED, ligando e desligando o LED*/
+    writeLED(4, true);
+    
+    while(1){
 
-		/* increments the ledColor from 0 to 7 */
-        if(++cLedColor>7)
-			cLedColor = 0;
+        
 
-		/* wait 100ms doing anything! */
-        util_genDelay100ms();
+        if(true == readSwitch(1)){
+
+            toggleLED(4);
+
+        }
+
+      
+        if(true == readSwitch(2)){
+
+            turnOnLED(4);
+
+        }
+
+        if (true == readSwitch(3)){
+        
+            turnOffLED(4);
+
+        }
     }
-
 }
