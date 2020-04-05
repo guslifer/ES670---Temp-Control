@@ -30,6 +30,38 @@
 #define BLUE_LED_PIN             (uint32_t) 1u
 
 
+
+/*Mascaras de ativação de pinos de portas como saída ou entrada*/
+
+#define uiPin0MaskEnable       0x01
+#define uiPin0MaskDisable      0xFFFE
+#define uiPin1MaskEnable       0x02
+#define uiPin1MaskDisable      0xFFFD
+#define uiPin2MaskEnable       0x04
+#define uiPin2MaskDisable      0xFFFB
+#define uiPin3MaskEnable       0x08
+#define uiPin3MaskDisable      0xFFF7
+
+#define uiPin4MaskEnable       0x010
+#define uiPin4MaskDisable      0xFFEF
+#define uiPin5MaskEnable       0x020
+#define uiPin5MaskDisable      0xFFDF
+#define uiPin6MaskEnable       0x040
+#define uiPin6MaskDisable      0xFFBF
+#define uiPin7MaskEnable       0x080
+#define uiPin7MaskDisable      0xFF7F
+
+#define uiPin8MaskEnable       0x100
+#define uiPin8MaskDisable      0xFEFF
+#define uiPin9MaskEnable       0x200
+#define uiPin9MaskDisable      0xFDFF
+
+
+#define uiSetPinAsGPIO         0x100
+#define uiSetClockPort         0x0200
+
+
+
 /* Configuração dos set-up necessários para utilizar os Led/Switch 
 *  INICIO 
 */ 
@@ -55,25 +87,24 @@
  * Quando (LCD_RS = LCD_RS_LOW => Registrador de instruções é selecionado.
  */
 
-#define LCD_PORT_BASE_PNT        PORTC
+#define uiSetClockPortC          0x0800
 #define LCD_GPIO_BASE_PNT        PTC
 
 #define LCD_RS_PIN               8U
 #define LCD_RS_DIR               kGpioDigitalOutput
 #define LCD_RS_ALT               kPortMuxAsGpio
 
-#define LCD_ENABLE_PIN           9U
 #define LCD_ENABLE_DIR           kGipioDigitalOutput
 #define LCD_ENABLE_ALT           kPortMuxAsGpio
 
-#define LCD_RS_HIGH              1U
+#define LCD_RS_HIGH              0x0100
 #define LCD_RS_DATA              LCD_RS_HIGH
 
-#define LCD_RS_LOW               0U
+#define LCD_RS_LOW               0x0000
 #define LCD_RS_CMD               LCD_RS_LOW
 
-#define LCD_ENABLED              1U
-#define LCD_DISABLED             0U
+#define LCD_ENABLED              uiPin9MaskEnable
+#define LCD_DISABLED             uiPin9MaskDisable
 
 #define LCD_DATA_DIR             kGpioDigitalOutput
 #define LCD_DATA_ALT             kPortMuxAsGpio
