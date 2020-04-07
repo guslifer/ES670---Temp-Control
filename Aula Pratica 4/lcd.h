@@ -1,12 +1,15 @@
-/* ***************************************************************** */
-/* File name:        lcd.h                                           */
-/* File description: Header file containing the functions/methods    */
-/*                   interfaces for handling the LCD hardware from   */
-/*                   the hardware kit                                */
-/* Author name:      dloubach                                        */
-/* Creation date:    16out2015                                       */
-/* Revision date:    25fev2016                                       */
-/* ***************************************************************** */
+/* ******************************************************************************** */
+/*                                                                                  */
+/*   Nome do arquivo:        lcd.h                                               */
+/*                                                                                  */
+/*   Descrição:              Arquivo Header contendo a declaração                   */
+/*                           das funções de interface do microcontrolador           */
+/*                           com o LCD do kit                                       */
+/*                                                                                  */
+/*   Autores:                Gustavo Lino e Giácomo Dollevedo                       */
+/*   Criado em:              07/04/2020                                             */
+/*   Ultima revisão em:      07/04/2020                                             */
+/* ******************************************************************************** */
 
 #ifndef SOURCES_LCD_H_
 #define SOURCES_LCD_H_
@@ -19,71 +22,84 @@
 #define CMD_NO_CUR_NO_BLINK 0x38 /* no cursor, no blink */
 
 
-/* ************************************************ */
-/* Method name:        lcd_initLcd                  */
-/* Method description: Initialize the LCD function  */
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_initLcd                                             */ 
+/* Descrição:               Inicializa as funcoes do LCD                            */
+/*                                                                                  */
+/* Parametros de entrada:   n/a                                                     */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
 void lcd_initLcd(void);
 
 
-/* ************************************************ */
-/* Method name:        lcd_writeData                */
-/* Method description: Write data to be displayed   */
-/* Input params:       ucData => char to be written */
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_writeData                                           */ 
+/* Descrição:               Escreve um dado no LCD                                  */
+/*                                                                                  */
+/* Parametros de entrada:   Um unsigned char que será escrito                       */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
 void lcd_writeData(unsigned char ucData);
 
 
-/* ************************************************ */
-/* Method name:        lcd_sendCommand              */
-/* Method description: Write command to LCD         */
-/* Input params:       ucCmd=>command to be executed*/
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_sendCommand                                         */ 
+/* Descrição:               Escreve um comando no LCD                               */
+/*                                                                                  */
+/* Parametros de entrada:   Um unsigned char descrevendo o comando que será feito   */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
 void lcd_sendCommand(unsigned char ucCmd);
 
 
-/* ************************************************ */
-/* Method name:        lcd_WriteString              */
-/* Method description: Write string to be displayed */
-/* Input params:       cBuffer => string to be      */
-/*                     written in LCD               */
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_writeString                                         */ 
+/* Descrição:               Escreve uma string no LCD                               */
+/*                                                                                  */
+/* Parametros de entrada:   Um array dinamico de char, contendo a string que sera   */
+/*                          escrita                                                 */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
 void lcd_writeString(const char *cBuffer);
 
 
-/* ************************************************ */
-/* Method name:        lcd_setCursor                */
-/* Method description: Set cursor line and column   */
-/* Input params:       cLine = LINE0..LINE1         */
-/*                     cColumn = COLUMN0..MAX_COLUMN*/
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_setCursor                                           */ 
+/* Descrição:               Move o cursor no LCD para uma posicao especifica        */
+/*                                                                                  */
+/* Parametros de entrada:   Dois unsigned char, contendo a linha (cLine) e coluna   */
+/*                          (cColumn) para onde o cursor sera movido no display     */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
 void lcd_setCursor(unsigned char cLine, unsigned char cColumn);
 
 
-/* ************************************************ */
-/* Method name:        lcd_dummyText                */
-/* Method description: Write a dummy hard coded text*/
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_dummyText                                           */ 
+/* Descrição:               Escreve um texto padrão no LCD                          */
+/*                                                                                  */
+/* Parametros de entrada:   n/a                                                     */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
 void lcd_dummyText(void);
 
 
-/* ************************************************ */
-/* Method name:        lcd_writeText                */
-/* Method description: Escreve um texto específico	*/
-/*					   em uma das duas linhas do lcd*/
-/* Input params:       cBuffer: Texto a ser inserido*/ 
-/*					   linha: cLine = LINE0..LINE1   */
-/*					   específica a linha 			*/
-/* Output params:      n/a                          */
-/* ************************************************ */
-void lcd_writeText(unsigned char cBuffer, unsigned char cLine);
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_writeText                                           */ 
+/* Descrição:               Escreve um texto específico em uma das duas linhas      */
+/*                          do LCD                                                  */
+/*                                                                                  */
+/* Parametros de entrada:   Uma string contendo o texto a ser escrito e um char     */
+/*                          indicando a linha (0 ou 1) do LCD para escrita          */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
+void lcd_writeText(const char *cBuffer, unsigned char iLine);
 
 #endif /* SOURCES_LCD_H_ */
