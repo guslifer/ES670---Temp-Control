@@ -1,6 +1,6 @@
 /* ******************************************************************************** */
 /*                                                                                  */
-/*   Nome do arquivo:        lcd.h                                               */
+/*   Nome do arquivo:        lcd.h                                                  */
 /*                                                                                  */
 /*   Descrição:              Arquivo Header contendo a declaração                   */
 /*                           das funções de interface do microcontrolador           */
