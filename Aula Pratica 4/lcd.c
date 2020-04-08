@@ -18,13 +18,18 @@
 #include "fsl_port_hal.h"
 #include "fsl_gpio_hal.h"
 
+/* Bibliotecas da linguagem */ 
+
+#include <string.h>
+
+
 /* line and columns */
 #define LINE0        0U
-#define COLUMN0        0U
+#define COLUMN0      0U
 
 #define L0C0_BASE    0x80 /* line 0, column 0 */
 #define L1C0_BASE    0xC0 /* line 1, column 0 */
-#define MAX_COLUMN  15U
+#define MAX_COLUMN   15U
 
 /* ************************************************ */
 /* Method name:        lcd_initLcd                  */
@@ -100,28 +105,30 @@ void lcd_write2Lcd(unsigned char ucBuffer,  unsigned char cDataType)
     /* writing data or command */
     if(LCD_RS_CMD == cDataType)
         /* will send a command */
-        GPIO_HAL_WritePinOutput(LCD_GPIO_BASE_PNT, LCD_RS_PIN, LCD_RS_CMD);
+        GPIOC_PDOR |= LCD_RS_CMD
     else
         /* will send data */
-        GPIO_HAL_WritePinOutput(LCD_GPIO_BASE_PNT, LCD_RS_PIN, LCD_RS_DATA);
+        GPIOC_PDOR |= LCD_RS_DATA;
 
     /* write in the LCD bus */
 
-    GPIOC_PSOR |= ((ucBuffer & (1u << 0u)) >> 0u);
-    GPIOC_PSOR |= ((ucBuffer & (1u << 1u)) >> 1u);
-    GPIOC_PSOR |= ((ucBuffer & (1u << 2u)) >> 2u);
-    GPIOC_PSOR |= ((ucBuffer & (1u << 3u)) >> 3u);
-    GPIOC_PSOR |= ((ucBuffer & (1u << 4u)) >> 4u);
-    GPIOC_PSOR |= ((ucBuffer & (1u << 5u)) >> 5u);
-    GPIOC_PSOR |= ((ucBuffer & (1u << 6u)) >> 6u);
-    GPIOC_PSOR |= ((ucBuffer & (1u << 7u)) >> 7u);
+    /*Precisaria limpar o registrador antes?*/
+
+    GPIOC_PDOR |= ((ucBuffer & (1u << 0u)) >> 0u);
+    GPIOC_PDOR |= ((ucBuffer & (1u << 1u)) >> 1u);
+    GPIOC_PDOR |= ((ucBuffer & (1u << 2u)) >> 2u);
+    GPIOC_PDOR |= ((ucBuffer & (1u << 3u)) >> 3u);
+    GPIOC_PDOR |= ((ucBuffer & (1u << 4u)) >> 4u);
+    GPIOC_PDOR |= ((ucBuffer & (1u << 5u)) >> 5u);
+    GPIOC_PDOR |= ((ucBuffer & (1u << 6u)) >> 6u);
+    GPIOC_PDOR |= ((ucBuffer & (1u << 7u)) >> 7u);
 
     /* enable, delay, disable LCD */
     /* this generates a pulse in the enable pin */
 
-	GPIOA_PSOR |= LCD_ENABLED;
+	GPIOA_PDOR |= LCD_ENABLED;
     util_genDelay1ms();
-    GPIOA_PSOR |= LCD_DISABLED;
+    GPIOA_PDOR &= LCD_DISABLED;
     util_genDelay1ms();
     util_genDelay1ms();
 }
@@ -212,7 +219,7 @@ void lcd_dummyText(void)
     lcd_sendCommand(CMD_CLEAR);
 
     // set the cursor line 0, column 1
-    lcd_setCursor(0,1);
+    lcd_setCursor(LINE0,1);
 
     // send string
     lcd_writeString("*** ES670 ***");
@@ -235,7 +242,7 @@ void lcd_writeString(const char *cBuffer)
     while(*cBuffer)
     {
         lcd_writeData(*cBuffer++);
-    };
+    }
 }
 
 /* ************************************************ */
@@ -247,4 +254,42 @@ void lcd_writeString(const char *cBuffer)
 /*					   específica a linha 			*/
 /* Output params:      n/a                          */
 /* ************************************************ */
-void lcd_writeText(unsigned char cBuffer, unsigned char cLine);
+void lcd_writeText(unsigned char cBuffer, int iLine)
+{
+
+	int ilen = strlen(cBuffer); 
+	char *cLine1, *cLine2;
+	// clear LCD
+	lcd_sendCommand(CMD_CLEAR);
+	// identifica a linha desejada
+	if(0 == iLine)
+		lcd_setCursor(LINE0,1);
+	else
+		lcd_setCursor(LINE1,1);
+
+	// send string
+
+
+	if(ilen < 17){ 
+		lcd_writeString(cBuffer);
+	}
+
+	else if(ilen < 37){ 
+		strncpy(cLine1, cBuffer, 16)
+		strcpy(cline2, &cBuffer[17])
+		lcd_writeString(cLine1);
+
+		lcd_setCursor(LINE1,1)
+		lcd_writeString(cLine1);
+
+
+	}
+
+    else{ 
+    	lcd_setCursor(LINE0,1)
+    	lcd_writeString("Too Many Car");
+
+    }
+
+
+}

@@ -100,6 +100,6 @@ void lcd_dummyText(void);
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void lcd_writeText(const char *cBuffer, unsigned char iLine);
+void lcd_writeText(const char *cBuffer, int iLine);
 
 #endif /* SOURCES_LCD_H_ */
