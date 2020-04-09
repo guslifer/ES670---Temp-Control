@@ -1,71 +1,87 @@
-/* ***************************************************************** */
-/* File name:        main.c                                          */
-/* File description: File dedicated to the ES670 prototype projects  */
-/*                   involving the FRDM-KL25Z board together with is */
-/*                   daughter board containing more peripherals      */
-/*                                                                   */
-/*                   Processor MKL25Z128VLK4 characteristics         */
-/*                   48 MHz ARM Cortex-M0+ core                      */
-/*                   128 KB program flash memory                     */
-/*                   16 KB SRAM                                      */
-/*                   Voltage range: 1.71 to 3.6 V                    */
-/*                                                                   */
-/* Author name:      Rodrigo M Bacurau                               */
-/* Creation date:    26fev2020                                       */
-/* Revision date:    02mar2020                                       */
-/* ***************************************************************** */
+/* ******************************************************************************** */
+/*                                                                                  */
+/*   Nome do arquivo:        main.c                                                 */
+/*                                                                                  */
+/*   DescriÃƒÂ§ÃƒÂ£o:              Arquivo main para teste das funcoes implementadas      */
+/*                           para interfacear o microcontrolador com o LCD          */
+/*                                                                                  */
+/*   Autores:                Gustavo Lino e GiÃƒÂ¡como Dollevedo                       */
+/*   Criado em:              08/04/2020                                             */
+/*   Ultima revisÃƒÂ£o em:     09/04/2020                                             */
+/* ******************************************************************************** */
 
-/* our includes */
-#include "util.h"
-#include "mcg.h"
-#include "ledrgb.h"
+/* Incluindo bibliotecas */
+#include "board.h"  
 #include "lcd.h"
+#include "ledSwi.h"
 
 
-/* globals */
-static unsigned char cLedColor = 0;                 /* stores the current RGB led color */
+/* Variaveis globais */
 
-/* ************************************************ */
-/* Method name:        boardInit                    */
-/* Method description: main board all needed        */
-/*                     initializations              */
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* Strings para testar display LCD */
+static const char ucLcdText1[32]  = "Funcionou!";
+static const char ucLcdText2[32]  = "microcomputador tem 15 letras!";
+
+/* **************************************************************************** */
+/* Nome do metodo:          boardInit                                           */
+/* DescriÃƒÂ§ÃƒÂ£o:               Inicializa os parametros necessarios para o         */
+/*                          teste                                               */
+/*                                                                              */
+/* Parametros de entrada:   n/a                                                 */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
 void boardInit(void)
 {
-	/* fist of all, clock configuration and initialization */
-	mcg_clockInit();
+    /* inicializando o LCD */
+    lcd_initLcd();
 
-	/* RGB LED initialization */
-	ledrgb_init();
+    /* inicializando as entradas e saidas */
+    ledSwi_init(false, false, false, true);
 }
 
 
 
-/* ************************************************ */
-/* Method name:        main                         */
-/* Method description: system entry point           */
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
+/* **************************************************************************** */
+/* Nome do metodo:          main                                                */
+/* DescriÃƒÂ§ÃƒÂ£o:               Executa um teste de cada funcao implementada em     */
+/*                          "lcd", combinando as entradas de botoes e LEDs      */
+/*                                                                              */
+/* Parametros de entrada:   n/a                                                 */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
 int main(void)
 {
-	/* board initializations */
-	boardInit();
+    /* executando rotina de inicializacao */
+    boardInit();
 
-	/* main loop */
+    /* acendendo o LED 4 do kit para referencia */
+    writeLED(4, true);
+
+    /* escrevendo o texto padrao no lcd */
+    lcd_dummyText();
+
+    /* main loop */
     while (1){
 
-		/* sets the RGB led color */
-        ledrgb_write(cLedColor);
+        if(true == readSwitch(1)){
+            toggleLED(4);
+            lcd_writeText(ucLcdText1, 1);
+        }
 
-		/* increments the ledColor from 0 to 7 */
-        if(++cLedColor>7)
-			cLedColor = 0;
+        if(true == readSwitch(2)){
+            toggleLED(4);
+            lcd_writeText(ucLcdText2, 0);
+        }
 
-		/* wait 100ms doing anything! */
-        util_genDelay100ms();
+
+        /* Este botao envia o comando de "clear" para o LCD */
+        if (true == readSwitch(3)){
+            toggleLED(4);
+            lcd_sendCommand(CMD_CLEAR);
+
+        }
+
     }
-
 }
