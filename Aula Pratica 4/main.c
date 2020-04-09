@@ -2,12 +2,12 @@
 /*                                                                                  */
 /*   Nome do arquivo:        main.c                                                 */
 /*                                                                                  */
-/*   Descrição:              Arquivo main para teste das funcoes implementadas      */
+/*   DescriÃ§Ã£o:              Arquivo main para teste das funcoes implementadas      */
 /*                           para interfacear o microcontrolador com o LCD          */
 /*                                                                                  */
-/*   Autores:                Gustavo Lino e Giácomo Dollevedo                       */
+/*   Autores:                Gustavo Lino e GiÃ¡como Dollevedo                       */
 /*   Criado em:              08/04/2020                                             */
-/*   Ultima revisão em:      09/04/2020                                             */
+/*   Ultima revisÃ£o em:     09/04/2020                                             */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */
@@ -24,7 +24,7 @@ static unsigned char ucLcdText2[32]  = "microcomputador tem 15 letras!";
 
 /* **************************************************************************** */
 /* Nome do metodo:          boardInit                                           */
-/* Descrição:               Inicializa os parametros necessarios para o         */
+/* DescriÃ§Ã£o:               Inicializa os parametros necessarios para o         */
 /*                          teste                                               */
 /*                                                                              */
 /* Parametros de entrada:   n/a                                                 */
@@ -44,7 +44,7 @@ void boardInit(void)
 
 /* **************************************************************************** */
 /* Nome do metodo:          main                                                */
-/* Descrição:               Executa um teste de cada funcao implementada em     */
+/* DescriÃ§Ã£o:               Executa um teste de cada funcao implementada em     */
 /*                          "lcd", combinando as entradas de botoes e LEDs      */
 /*                                                                              */
 /* Parametros de entrada:   n/a                                                 */
@@ -83,4 +83,5 @@ int main(void)
 
         }
 
+    }
 }

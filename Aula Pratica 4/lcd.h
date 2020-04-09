@@ -2,13 +2,13 @@
 /*                                                                                  */
 /*   Nome do arquivo:        lcd.h                                                  */
 /*                                                                                  */
-/*   Descrição:              Arquivo Header contendo a declaração                   */
-/*                           das funções de interface do microcontrolador           */
+/*   DescriÃ§Ã£o:              Arquivo Header contendo a declaraÃ§Ã£o                   */
+/*                           das funÃ§Ãµes de interface do microcontrolador           */
 /*                           com o LCD do kit                                       */
 /*                                                                                  */
-/*   Autores:                Gustavo Lino e Giácomo Dollevedo                       */
+/*   Autores:                Gustavo Lino e GiÃ¡como Dollevedo                       */
 /*   Criado em:              07/04/2020                                             */
-/*   Ultima revisão em:      09/04/2020                                             */
+/*   Ultima revisÃ£o em:      09/04/2020                                             */
 /* ******************************************************************************** */
 
 #ifndef SOURCES_LCD_H_
@@ -24,7 +24,7 @@
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_initLcd                                             */ 
-/* Descrição:               Envia um comando ou dado para o LCD                     */
+/* DescriÃ§Ã£o:               Envia um comando ou dado para o LCD                     */
 /*                                                                                  */
 /* Parametros de entrada:   ucBuffer    -> char do dado que sera enviado            */
 /*                          cDataType   -> commando (LCD_RS_CMD) ou dado            */
@@ -37,20 +37,20 @@ void lcd_initLcd(void);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_write2Lcd                                           */ 
-/* Descrição:               Inicializa as funcoes do LCD                            */
+/* DescriÃ§Ã£o:               Inicializa as funcoes do LCD                            */
 /*                                                                                  */
 /* Parametros de entrada:   n/a                                                     */
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void lcd_write2Lcd(unsigned char ucBuffer,  unsigned char cDataType)
+void lcd_write2Lcd(unsigned char ucBuffer,  unsigned char cDataType);
 
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_writeData                                           */ 
-/* Descrição:               Escreve um dado no LCD                                  */
+/* DescriÃ§Ã£o:               Escreve um dado no LCD                                  */
 /*                                                                                  */
-/* Parametros de entrada:   Um unsigned char que será escrito                       */
+/* Parametros de entrada:   Um unsigned char que serÃ¡ escrito                       */
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
@@ -59,9 +59,9 @@ void lcd_writeData(unsigned char ucData);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_sendCommand                                         */ 
-/* Descrição:               Escreve um comando no LCD                               */
+/* DescriÃ§Ã£o:               Escreve um comando no LCD                               */
 /*                                                                                  */
-/* Parametros de entrada:   Um unsigned char descrevendo o comando que será feito   */
+/* Parametros de entrada:   Um unsigned char descrevendo o comando que serÃ¡ feito   */
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
@@ -70,7 +70,7 @@ void lcd_sendCommand(unsigned char ucCmd);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_writeString                                         */ 
-/* Descrição:               Escreve uma string no LCD                               */
+/* DescriÃ§Ã£o:               Escreve uma string no LCD                               */
 /*                                                                                  */
 /* Parametros de entrada:   Um array dinamico de char, contendo a string que sera   */
 /*                          escrita                                                 */
@@ -82,7 +82,7 @@ void lcd_writeString(const char *cBuffer);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_setCursor                                           */ 
-/* Descrição:               Move o cursor no LCD para uma posicao especifica        */
+/* DescriÃ§Ã£o:               Move o cursor no LCD para uma posicao especifica        */
 /*                                                                                  */
 /* Parametros de entrada:   Dois unsigned char, contendo a linha (cLine) e coluna   */
 /*                          (cColumn) para onde o cursor sera movido no display     */
@@ -94,7 +94,7 @@ void lcd_setCursor(unsigned char cLine, unsigned char cColumn);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_dummyText                                           */ 
-/* Descrição:               Escreve um texto padrão no LCD                          */
+/* DescriÃ§Ã£o:               Escreve um texto padrÃ£o no LCD                          */
 /*                                                                                  */
 /* Parametros de entrada:   n/a                                                     */
 /*                                                                                  */
@@ -105,7 +105,7 @@ void lcd_dummyText(void);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_writeText                                           */ 
-/* Descrição:               Escreve um texto específico em uma das duas linhas      */
+/* DescriÃ§Ã£o:               Escreve um texto especÃ­fico em uma das duas linhas      */
 /*                          do LCD                                                  */
 /*                                                                                  */
 /* Parametros de entrada:   Uma string contendo o texto a ser escrito e um inteiro  */
@@ -113,6 +113,6 @@ void lcd_dummyText(void);
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void lcd_writeText(const char *cBuffer, int iLine);
+void lcd_writeText(unsigned char *cBuffer, int iLine);
 
 #endif /* SOURCES_LCD_H_ */

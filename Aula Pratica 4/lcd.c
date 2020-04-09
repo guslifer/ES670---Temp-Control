@@ -1,22 +1,17 @@
-/* ***************************************************************** */
-/* File name:        lcd.c                                           */
-/* File description: File dedicated to the hardware abstraction layer*/
-/*                   related to the LCD HARDWARE based on the KS006U */
-/*                   controller                                      */
-/* Author name:      dloubach, Gustavo L. Fernandes, 				 */
-/*					 Giácomo A. Dollevedo                            */
-/* Creation date:    16out2015                                       */
-/* Revision date:    04abr2020                                       */
-/* ***************************************************************** */
+/* ******************************************************************************** */
+/*                                                                                  */
+/*   Nome do arquivo:        lcd.c                                                  */
+/*                                                                                  */
+/*   DescriÃ§Ã£o:             Arquivo contendo as implementacoes das funcoes        */
+/*                          necessarias para a interface do LCD com o kit           */
+/*                                                                                  */
+/*   Autores:                Gustavo Lino e GiÃ¡como Dollevedo                      */
+/*   Criado em:              07/04/2020                                             */
+/*   Ultima revisÃ£o em:     09/04/2020                                             */
+/* ******************************************************************************** */
 
 #include "lcd.h"
-#include "KL25Z/es670_peripheral_board.h"
-#include "Util/util.h"
-
-/* system includes */
-#include "fsl_clock_manager.h"
-#include "fsl_port_hal.h"
-#include "fsl_gpio_hal.h"
+#include "board.h"
 
 /* Bibliotecas da linguagem */ 
 
@@ -25,6 +20,8 @@
 
 /* line and columns */
 #define LINE0        0U
+#define LINE1        1U
+
 #define COLUMN0      0U
 
 #define L0C0_BASE    0x80 /* line 0, column 0 */
@@ -38,8 +35,8 @@
 /* Output params:       n/a                         */
 /* ************************************************ */
 
-/* Pinos de controle do dispositivo LCD estão		*/
-/* conectados na porta C, de 0 a 9					*/
+/* Pinos de controle do dispositivo LCD estÃ£o      */
+/* conectados na porta C, de 0 a 9                  */
 void lcd_initLcd(void)
 {
     /* pins configured as outputs */
@@ -49,7 +46,7 @@ void lcd_initLcd(void)
 
     /* set pin as gpio */
     PORTC_PCR0 |= uiSetPinAsGPIO;
- 	PORTC_PCR1 |= uiSetPinAsGPIO; 
+    PORTC_PCR1 |= uiSetPinAsGPIO; 
     PORTC_PCR2 |= uiSetPinAsGPIO; 
     PORTC_PCR3 |= uiSetPinAsGPIO; 
     PORTC_PCR4 |= uiSetPinAsGPIO;
@@ -105,7 +102,7 @@ void lcd_write2Lcd(unsigned char ucBuffer,  unsigned char cDataType)
     /* writing data or command */
     if(LCD_RS_CMD == cDataType)
         /* will send a command */
-        GPIOC_PDOR |= LCD_RS_CMD
+        GPIOC_PDOR |= LCD_RS_CMD;
     else
         /* will send data */
         GPIOC_PDOR |= LCD_RS_DATA;
@@ -126,11 +123,11 @@ void lcd_write2Lcd(unsigned char ucBuffer,  unsigned char cDataType)
     /* enable, delay, disable LCD */
     /* this generates a pulse in the enable pin */
 
-	GPIOA_PDOR |= LCD_ENABLED;
-    util_genDelay1ms();
+    GPIOA_PDOR |= LCD_ENABLED;
+   // util_genDelay1ms();
     GPIOA_PDOR &= LCD_DISABLED;
-    util_genDelay1ms();
-    util_genDelay1ms();
+    //util_genDelay1ms();
+    //util_genDelay1ms();
 }
 
 
@@ -189,24 +186,6 @@ void lcd_setCursor(unsigned char cLine, unsigned char cColumn)
 }
 
 
-
-/* ************************************************ */
-/* Method name:        lcd_writeString              */
-/* Method description: Write string to be displayed */
-/* Input params:       cBuffer => string to be      */
-/*                     written in LCD               */
-/* Output params:      n/a                          */
-/* ************************************************ */
-void lcd_writeString(const char *cBuffer)
-{
-    while(*cBuffer)
-    {
-        lcd_writeData(*cBuffer++);
-    };
-}
-
-
-
 /* ************************************************ */
 /* Method name:        lcd_dummyText                */
 /* Method description: Write a dummy hard coded text*/
@@ -237,57 +216,55 @@ void lcd_dummyText(void)
 /*                     written in LCD               */
 /* Output params:      n/a                          */
 /* ************************************************ */
-void lcd_writeString(const char *cBuffer)
-{
-    while(*cBuffer)
-    {
+void lcd_writeString(const char *cBuffer){
+    while(*cBuffer){
         lcd_writeData(*cBuffer++);
     }
 }
 
 /* ************************************************ */
 /* Method name:        lcd_writeText                */
-/* Method description: Escreve um texto específico	*/
-/*					   em uma das duas linhas do lcd*/
+/* Method description: Escreve um texto especÃ­fico */
+/*                     em uma das duas linhas do lcd*/
 /* Input params:       cBuffer: Texto a ser inserido*/ 
-/*					   linha: cLine = LINE0..LINE1   */
-/*					   específica a linha 			*/
+/*                     linha: cLine = LINE0..LINE1   */
+/*                     especÃ­fica a linha          */
 /* Output params:      n/a                          */
 /* ************************************************ */
-void lcd_writeText(unsigned char cBuffer, int iLine)
+void lcd_writeText(unsigned char *cBuffer, int iLine)
 {
 
-	int ilen = strlen(cBuffer); 
-	char *cLine1, *cLine2;
-	// clear LCD
-	lcd_sendCommand(CMD_CLEAR);
-	// identifica a linha desejada
-	if(0 == iLine)
-		lcd_setCursor(LINE0,1);
-	else
-		lcd_setCursor(LINE1,1);
+    int ilen = strlen(cBuffer); 
+    char *cLine1, *cLine2;
+    // clear LCD
+    lcd_sendCommand(CMD_CLEAR);
+    // identifica a linha desejada
+    if(0 == iLine)
+        lcd_setCursor(LINE0,1);
+    else
+        lcd_setCursor(LINE1,1);
 
-	// send string
-
-
-	if(ilen < 17){ 
-		lcd_writeString(cBuffer);
-	}
-
-	else if(ilen < 37){ 
-		strncpy(cLine1, cBuffer, 16)
-		strcpy(cline2, &cBuffer[17])
-		lcd_writeString(cLine1);
-
-		lcd_setCursor(LINE1,1)
-		lcd_writeString(cLine1);
+    // send string
 
 
-	}
+    if(ilen < 17){ 
+        lcd_writeString(cBuffer);
+    }
+
+    else if(ilen < 37){ 
+        strncpy(cLine1, cBuffer, 16);
+        strcpy(cLine2, &cBuffer[17]);
+        lcd_writeString(cLine1);
+
+        lcd_setCursor(LINE1,1);
+        lcd_writeString(cLine1);
+
+
+    }
 
     else{ 
-    	lcd_setCursor(LINE0,1)
-    	lcd_writeString("Too Many Car");
+        lcd_setCursor(LINE0,1);
+        lcd_writeString("Too Many Car");
 
     }
 
