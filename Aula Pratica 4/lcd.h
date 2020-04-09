@@ -8,7 +8,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giácomo Dollevedo                       */
 /*   Criado em:              07/04/2020                                             */
-/*   Ultima revisão em:      07/04/2020                                             */
+/*   Ultima revisão em:      09/04/2020                                             */
 /* ******************************************************************************** */
 
 #ifndef SOURCES_LCD_H_
@@ -24,13 +24,26 @@
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_initLcd                                             */ 
+/* Descrição:               Envia um comando ou dado para o LCD                     */
+/*                                                                                  */
+/* Parametros de entrada:   ucBuffer    -> char do dado que sera enviado            */
+/*                          cDataType   -> commando (LCD_RS_CMD) ou dado            */
+/*                                         (LCD_RS_DATA)                            */
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
+void lcd_initLcd(void);
+
+
+/* ******************************************************************************** */
+/* Nome do metodo:          lcd_write2Lcd                                           */ 
 /* Descrição:               Inicializa as funcoes do LCD                            */
 /*                                                                                  */
 /* Parametros de entrada:   n/a                                                     */
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void lcd_initLcd(void);
+void lcd_write2Lcd(unsigned char ucBuffer,  unsigned char cDataType)
 
 
 /* ******************************************************************************** */
@@ -100,6 +113,6 @@ void lcd_dummyText(void);
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void lcd_writeText(const char *cBuffer, unsigned char iLine);
+void lcd_writeText(const char *cBuffer, unsigned char cLine);
 
 #endif /* SOURCES_LCD_H_ */

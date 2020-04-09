@@ -7,7 +7,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giácomo Dollevedo                       */
 /*   Criado em:              08/04/2020                                             */
-/*   Ultima revisão em:      08/04/2020                                             */
+/*   Ultima revisão em:      09/04/2020                                             */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */
@@ -17,7 +17,10 @@
 
 
 /* Variaveis globais */
-static unsigned char ucCurrLine = 0, ucCurrCol = 0; /* Guarda a posicao atual do cursor do LCD*/
+
+/* Strings para testar display LCD */
+static unsigned char ucLcdText1[32]  = "Funcionou!"; 
+static unsigned char ucLcdText2[32]  = "microcomputador tem 15 letras!";
 
 /* **************************************************************************** */
 /* Nome do metodo:          boardInit                                           */
@@ -64,29 +67,14 @@ int main(void)
 
         if(true == readSwitch(1)){
             toggleLED(4);
-
+            lcd_writeText(ucLcdText1, 1);
         }
 
-      
-        /* Este botao deve controlar o cursor do LCD */
         if(true == readSwitch(2)){
             toggleLED(4);
-            lcd_setCursor(ucCurrLine, ucCurrCol);
-            ucCurrCol++;
-
-            if(16 == ucCurrCol){
-                if(0 == ucCurrLine){
-                    ucCurrLine++;
-                }
-                else{
-                    ucCurrLine = 0;
-                }
-
-                ucCurrCol = 0;
-
-            }
-
+            lcd_writeText(ucLcdText2, 0);
         }
+
 
         /* Este botao envia o comando de "clear" para o LCD */
         if (true == readSwitch(3)){
