@@ -113,6 +113,10 @@ void lcd_dummyText(void);
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
+<<<<<<< HEAD
 void lcd_writeText(const char *cBuffer, unsigned char cLine);
+=======
+void lcd_writeText(const char *cBuffer, int iLine);
+>>>>>>> 7799868e1a54a18a1285a204ab3c8362859403aa
 
 #endif /* SOURCES_LCD_H_ */
