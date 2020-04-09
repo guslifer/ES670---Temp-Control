@@ -108,15 +108,11 @@ void lcd_dummyText(void);
 /* Descrição:               Escreve um texto específico em uma das duas linhas      */
 /*                          do LCD                                                  */
 /*                                                                                  */
-/* Parametros de entrada:   Uma string contendo o texto a ser escrito e um char     */
+/* Parametros de entrada:   Uma string contendo o texto a ser escrito e um inteiro  */
 /*                          indicando a linha (0 ou 1) do LCD para escrita          */
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-<<<<<<< HEAD
-void lcd_writeText(const char *cBuffer, unsigned char cLine);
-=======
 void lcd_writeText(const char *cBuffer, int iLine);
->>>>>>> 7799868e1a54a18a1285a204ab3c8362859403aa
 
 #endif /* SOURCES_LCD_H_ */
