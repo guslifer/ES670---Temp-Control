@@ -59,9 +59,9 @@ void lcd_writeData(unsigned char ucData);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_sendCommand                                         */ 
-/* DescriÃ§Ã£o:               Escreve um comando no LCD                               */
+/* DescriÃ§Ã£o:               Escreve um comando no LCD                             */
 /*                                                                                  */
-/* Parametros de entrada:   Um unsigned char descrevendo o comando que serÃ¡ feito   */
+/* Parametros de entrada:   Um unsigned char descrevendo o comando que serÃ¡ feito  */
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
