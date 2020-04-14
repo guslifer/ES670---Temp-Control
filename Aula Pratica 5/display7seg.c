@@ -65,6 +65,8 @@ void display7seg_writeSymbol(unsigned char ucDisplay,  unsigned char ucValue){
     selectDisp(ucDisplay);
 
     /*CLEAR no display*/
+    /* A mascara mantem o estado dos outros pinos */
+
     GPIOC_PDOR &= DISP_CLEAR;
 
     if(ucValue < 20){
@@ -140,6 +142,7 @@ void display7seg_writeSymbol(unsigned char ucDisplay,  unsigned char ucValue){
 void selectDisp(unsigned char ucDisplay){
 
     /* CLEAR, zerando pinos de 10 a 13 (1111 1111 1111 1111 1111 0000 1111 1111) */
+    /* A mascara mantem o estado dos outros pinos */
     GPIOC_PDOR &= 0xFFFFF0FF;
 
     switch(ucDisplay){
