@@ -7,24 +7,20 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e GiÃƒÂ¡como Dollevedo                    */
 /*   Criado em:              14/04/2020                                             */
-/*   Ultima revisÃƒÂ£o em:   14/04/2020                                             */
+/*   Ultima revisÃƒÂ£o em:   22/04/2020                                             */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */
 #include "board.h"  
-#include "lcd.h"
-#include "ledSwi.h"
-#include "lptrm.h"
-#include "display7seg"
+#include "lptmr.h"
+#include "display7seg.h"
 
 
 /* Variaveis globais */
 
 /* Strings para testar display LCD */
-static const char ucLcdText1[32]  = "Funcionou!";
-static const char ucLcdText2[32]  = "microcomputador tem 15 letras!";
 unsigned int ui4ms = 4; 
-bool refresh = false; 
+unsigned char refresh = 0;
 
 
 
@@ -32,13 +28,14 @@ bool refresh = false;
 
 
 
-void_d7s_segurador(void)
+void d7s_segurador(void)
 {
-	refresh = true;
+    refresh = 1;
+    return;
 }
 
 
-voidtc_installLptmr0(ui4ms, void_d7s_segurador);
+void tc_installLptmr0(ui4ms, d7s_segurador);
 
 /* **************************************************************************** */
 /* Nome do metodo:          boardInit                                           */
@@ -54,11 +51,8 @@ voidtc_installLptmr0(ui4ms, void_d7s_segurador);
 
 void boardInit(void)
 {
-    /* inicializando o LCD */
-    lcd_initLcd();
-
-    /* inicializando as entradas e saidas */
-    ledSwi_init(false, false, false, true);
+    /* inicializando o D7S */
+	display7seg_init();
 }
 
 
@@ -76,7 +70,7 @@ int main(void)
 {
     /* executando rotina de inicializacao */
     boardInit();
-    display7seg_init();
+
 
   
     int aux = 0;
@@ -89,28 +83,29 @@ int main(void)
 
 // Separa cada caracter do valor desejado em uma variavel
 
+    while(1){
+        while(1 == refresh){  //Entra assim que haver uma interrupção
 
-	while(true == refresh){  //Entra assim que haver uma interrupção
-
-		if(aux = 0){ //liga o display 1
-			display7seg_writeSymbol(1, ucCaracterD1);
-			aux ++; 
-			refresh = false; 
-		}
-		if(aux = 1){ //liga o display 2
-			display7seg_writeSymbol(2, ucCaracterD2);
-			aux ++; 
-			refresh = false; 
-		}
-		if(aux = 2){ //liga o display 3
-			display7seg_writeSymbol(3, ucCaracterD3);
-			aux ++; 
-			refresh = false; 
-		}
-		if(aux = 3){ //liga o display 4
-			display7seg_writeSymbol(4, ucCaracterD4);
-			aux = 0; 
-			refresh = false; 
-		}
-	}
+            if(0 == aux){ //liga o display 1
+                display7seg_writeSymbol(1, ucCaracterD1);
+                aux ++; 
+                refresh = 0;
+            }
+            if(1 == aux){ //liga o display 2
+                display7seg_writeSymbol(2, ucCaracterD2);
+                aux ++; 
+                refresh = 0;
+            }
+            if(2 == aux){ //liga o display 3
+                display7seg_writeSymbol(3, ucCaracterD3);
+                aux ++; 
+                refresh = 0;
+            }
+            if(3 == aux){ //liga o display 4
+                display7seg_writeSymbol(4, ucCaracterD4);
+                aux = 0; 
+                refresh = 0;
+            }
+        }
+    }
 }

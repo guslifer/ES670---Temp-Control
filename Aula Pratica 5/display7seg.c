@@ -172,5 +172,3 @@ void selectDisp(unsigned char ucDisplay){
     }
 
 }
-
-#endif /* SOURCES_D7S_ */
