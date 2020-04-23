@@ -8,65 +8,64 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              21/04/2020                                             */
-/*   Ultima revisao em:      21/04/2020                                             */
+/*   Ultima revisao em:      23/04/2020                                             */
 /* ******************************************************************************** */
 
-#ifndef SOURCES_D7S_
-#define SOURCES_D7S_
+#ifndef SOURCES_COOLER_HEATER_
+#define SOURCES_COOLER_HEATER_
 
-/* formato letras display 7 seg */
-/*  DP    g    f    e   d   c   b   a*/
-
-#define DISP_0      0x003F
-#define DISP_1      0x0006
-#define DISP_2      0x005B
-#define DISP_3      0x004F
-#define DISP_4      0x0066 
-#define DISP_5      0x006D
-#define DISP_6      0x007D
-#define DISP_7      0x0007
-#define DISP_8      0x007F
-#define DISP_9      0x006F
-#define DISP_A      0x0077
-#define DISP_B      0x007C
-#define DISP_C      0x0039
-#define DISP_D      0x005E
-#define DISP_E      0x0079
-#define DISP_F      0x0071
-#define DISP_DP     0x0080
-#define DISP_CLEAR  0xFFFFFF00
-#define DISP_ALL    0x00FF
+#define CLEAR_16 = 0x0000
 
 /* ******************************************************************************** */
-/* Nome do metodo:          display7Seg_init                                        */ 
-/* Descricao:               Inicializa os registradores para funcionamento do D7S   */
+/* Nome do metodo:          PWM_init                                                */ 
+/* Descricao:               Inicializa os registradores para funcionamento do PWM   */
+/*                          entre 5 e 20Hz                                          */
 /*                                                                                  */
 /* Parametros de entrada:    n/a                                                    */
 /*                                                                                  */
+/* Parametros de saida:      n/a                                                    */
+/* ******************************************************************************** */
+void PWM_init(void){}
+
+
+/* ******************************************************************************** */
+/* Nome do metodo:          coolerfan_init                                          */ 
+/* Descricao:               Configura a liberacao do sinal PWM no pino PTA13        */
+/*                                                                                  */
+/* Parametros de entrada:    n/a                                                    */
+/*                                                                                  */
+/* Parametros de saida:      n/a                                                    */
+/* ******************************************************************************** */
+void coolerfan_init(void){}
+
+
+/* ******************************************************************************** */
+/* Nome do metodo:          heater_init                                             */ 
+/* Descricao:               Configura a liberacao do sinal PWM no pino PTA12        */
+/*                                                                                  */
+/* Parametros de entrada:    n/a                                                    */
+/*                                                                                  */
+/* Parametros de saida:      n/a                                                    */
+/* ******************************************************************************** */
+void heater_init(void){}
+
+/* ******************************************************************************** */
+/* Nome do metodo:          coolerfan_PWMDuty                                       */ 
+/* Descricao:               Configura o Duty Cycle do PWM para o cooler             */
+/*                                                                                  */
+/* Parametros de entrada:   fCoolerDuty -> valor entre 0 e 1 indicando o Duty Cycle */
+/*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void display7seg_init(void);
-
+void coolerfan_PWMDuty(float fCoolerDuty){}
 
 /* ******************************************************************************** */
-/* Nome do metodo:          display7seg_writeSymbol                                 */ 
-/* Descricao:               Escreve um caracter em um D7S                           */
+/* Nome do metodo:          heater_PWMDuty                                          */ 
+/* Descricao:               Configura o Duty Cycle do PWM para o cooler             */
 /*                                                                                  */
-/* Parametros de entrada:   ucDisplay -> indica o D7S no qual sera escrito (1 a 4)  */
-/*                          ucValue -> valor indicando o caracter que sera escrito  */
+/* Parametros de entrada:   fHeaterDuty -> valor entre 0 e 1 indicando o Duty Cycle */
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void display7seg_writeSymbol(unsigned char ucDisplay,  unsigned char ucValue);
-
-
-/* ******************************************************************************** */
-/* Nome do metodo:          selectDisp                                              */ 
-/* Descricao:               Seleciona o D7S que sera escrito                        */
-/*                                                                                  */
-/* Parametros de entrada:   ucDisplay -> indica o D7S no qual sera escrito (1 a 4)  */
-/*                                                                                  */
-/* Parametros de saida:     n/a                                                     */
-/* ******************************************************************************** */
-void selectDisp(unsigned char ucDisplay);
-#endif /* SOURCES_D7S_ */
+void heater_PWMDuty(float fHeaterDuty){}
+#endif /* SOURCES_COOLER_HEATER_ */

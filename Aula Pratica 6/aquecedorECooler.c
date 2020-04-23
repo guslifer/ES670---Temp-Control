@@ -8,7 +8,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              21/04/2020                                             */
-/*   Ultima revisao em:      21/04/2020                                             */
+/*   Ultima revisao em:      23/04/2020                                             */
 /* ******************************************************************************** */
 
 #include "board.h"
@@ -41,18 +41,21 @@ void PWM_init(void){
     /*Modo de up-counting */
     TPM1_SC   |= PWM_UP_COUNTING;
 
-    /*Conta todos pulsos*/
+    /*Incrementa a cada pulso*/
     TPM1_SC   |= PWM_EVERY_CLOCK;   
 
     /*Modulo configurado para 49 (chegar numa freq de 10Hz)*/
+    /*Portanto, conta ate 50 (0 a 49)*/
     TPM1_MOD  |= 0x0031;
 
     /*Configurando modo Edge Aligned PWM e High True Pulses nos canais 0 e 1*/
     TPM1_C0SC |= EDGE_ALIGNED_HIGH_TRUE;
     TPM1_C1SC |= EDGE_ALIGNED_HIGH_TRUE;
 
-    /*DUTY CYCLE*/
-
+    /*DUTY CYCLE 50%*/
+    /*Inverte o sinal apos contar 25 vezes*/
+    TPM1_C0V |= 0x0019;
+    TPM1_C1V |= 0x0019;
 }
 
 
@@ -99,6 +102,19 @@ void heater_init(void){
 /* ******************************************************************************** */
 void coolerfan_PWMDuty(float fCoolerDuty){
    
+    unsigned char ucDuty = 0;
+
+    if(0 <= fCoolerDuty && 1 >= fCoolerDuty){
+        ucDuty = 50*fCoolerDuty;
+    }
+
+    else{
+        ucDuty = 0x0019;
+    }
+
+    TPM1_C1V &= CLEAR_16;
+    TPM1_C1V |= ucDuty;
+
 }
 
 /* ******************************************************************************** */
@@ -110,6 +126,19 @@ void coolerfan_PWMDuty(float fCoolerDuty){
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
 void heater_PWMDuty(float fHeaterDuty){
+
+    unsigned char ucDuty = 0;
+
+    if(0 <= fHeaterDuty && 1 >= fHeaterDuty){
+         ucDuty = 50*fHeaterDuty;
+    }
+
+    else{
+        ucDuty = 0x0019;
+    }
+
+    TPM1_C0V &= CLEAR_16;
+    TPM1_C0V |= ucDuty;
 
 }
 
