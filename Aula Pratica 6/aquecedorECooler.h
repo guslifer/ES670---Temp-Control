@@ -14,7 +14,7 @@
 #ifndef SOURCES_COOLER_HEATER_
 #define SOURCES_COOLER_HEATER_
 
-#define CLEAR_16 = 0x0000
+#define CLEAR_16   0x0000
 
 /* ******************************************************************************** */
 /* Nome do metodo:          PWM_init                                                */ 
@@ -25,7 +25,7 @@
 /*                                                                                  */
 /* Parametros de saida:      n/a                                                    */
 /* ******************************************************************************** */
-void PWM_init(void){}
+void PWM_init(void);
 
 
 /* ******************************************************************************** */
@@ -36,7 +36,7 @@ void PWM_init(void){}
 /*                                                                                  */
 /* Parametros de saida:      n/a                                                    */
 /* ******************************************************************************** */
-void coolerfan_init(void){}
+void coolerfan_init(void);
 
 
 /* ******************************************************************************** */
@@ -47,7 +47,7 @@ void coolerfan_init(void){}
 /*                                                                                  */
 /* Parametros de saida:      n/a                                                    */
 /* ******************************************************************************** */
-void heater_init(void){}
+void heater_init(void);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          coolerfan_PWMDuty                                       */ 
@@ -57,7 +57,7 @@ void heater_init(void){}
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void coolerfan_PWMDuty(float fCoolerDuty){}
+void coolerfan_PWMDuty(float fCoolerDuty);
 
 /* ******************************************************************************** */
 /* Nome do metodo:          heater_PWMDuty                                          */ 
@@ -67,5 +67,6 @@ void coolerfan_PWMDuty(float fCoolerDuty){}
 /*                                                                                  */
 /* Parametros de saida:     n/a                                                     */
 /* ******************************************************************************** */
-void heater_PWMDuty(float fHeaterDuty){}
+void heater_PWMDuty(float fHeaterDuty);
+
 #endif /* SOURCES_COOLER_HEATER_ */

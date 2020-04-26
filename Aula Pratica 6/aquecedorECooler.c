@@ -141,5 +141,3 @@ void heater_PWMDuty(float fHeaterDuty){
     TPM1_C0V |= ucDuty;
 
 }
-
-#endif /* SOURCES_D7S_ */
