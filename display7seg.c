@@ -27,7 +27,7 @@ void display7seg_init(void){
 
 
     /* Liberando o Clock para porta C*/
-    SIM_SCGC5 |= uiSetClockPortC;
+    SIM_SCGC5 |= uiSetClockPort;
 
     /* Declarando os pinos como GPIO */
     PORTC_PCR0 |= uiSetPinAsGPIO;   //Segmento A

@@ -1,71 +1,151 @@
-/* ***************************************************************** */
-/* File name:        main.c                                          */
-/* File description: File dedicated to the ES670 prototype projects  */
-/*                   involving the FRDM-KL25Z board together with is */
-/*                   daughter board containing more peripherals      */
-/*                                                                   */
-/*                   Processor MKL25Z128VLK4 characteristics         */
-/*                   48 MHz ARM Cortex-M0+ core                      */
-/*                   128 KB program flash memory                     */
-/*                   16 KB SRAM                                      */
-/*                   Voltage range: 1.71 to 3.6 V                    */
-/*                                                                   */
-/* Author name:      Rodrigo M Bacurau                               */
-/* Creation date:    26fev2020                                       */
-/* Revision date:    02mar2020                                       */
-/* ***************************************************************** */
+/* ******************************************************************************** */
+/*                                                                                  */
+/*   Nome do arquivo:        main.c                                                 */
+/*                                                                                  */
+/*   Descricao:             Arquivo main para teste das funcoes implementadas       */
+/*                           para o microcontrolador utilizar um tacometro          */
+/*                                                                                  */
+/*   Autores:                Gustavo Lino e Giacomo A. Dollevedo                	*/
+/*   Criado em:              08/05/2020                                             */
+/*   Ultima revisao em:   	 09/05/2020                                             */
+/* ******************************************************************************** */
 
-/* our includes */
-#include "util.h"
-#include "mcg.h"
-#include "ledrgb.h"
+/* Incluindo bibliotecas */
+#include "board.h"  
+#include "tacometro.h"
+#include "aquecedorECooler.h"
+#include "lptmr.h"
 #include "lcd.h"
 
 
-/* globals */
-static unsigned char cLedColor = 0;                 /* stores the current RGB led color */
+unsigned int ui250ms    = 250000;
+unsigned int uiRotacao  = 0;
 
-/* ************************************************ */
-/* Method name:        boardInit                    */
-/* Method description: main board all needed        */
-/*                     initializations              */
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
-void boardInit(void)
-{
-	/* fist of all, clock configuration and initialization */
-	mcg_clockInit();
+unsigned char ucFlag = 0;
 
-	/* RGB LED initialization */
-	ledrgb_init();
+unsigned char digitos[4] = "0"; 
+
+
+/*  
+ *  Rotina de interrupcao executada pelo timer LPTMR0
+ *      - Retorna a rotacao (RPM) em uiRotacao
+ *      - Flipa uma flag para escrever no LCD
+*/
+void main_cyclicExecuteIsr(void){
+
+    uiRotacao = tachometer_readSensor(ui250ms);
+    ucFlag = 1;
+
 }
 
+/* Instalando a rotina com um periodo de 250ms no timer */
+void tc_installLptmr0(ui250ms, main_cyclicExecuteIsr);
 
 
-/* ************************************************ */
-/* Method name:        main                         */
-/* Method description: system entry point           */
-/* Input params:       n/a                          */
-/* Output params:      n/a                          */
-/* ************************************************ */
-int main(void)
-{
-	/* board initializations */
-	boardInit();
 
-	/* main loop */
-    while (1){
+/* **************************************************************************** */
+/* ADICIONAR A BIBLIOTECA DO LCD ASAP!                                          */
+/* Nome do metodo:          extrai_digito                                       */
+/* Descricao:               Extrai os digitos de um inteiro e os armazena em    */
+/*                          um vetor de unsigned char                           */
+/*                                                                              */
+/* Parametros de entrada:   numero -> inteiro o qual os digitos serao extraidos */                                               
+/*                          digitos -> array para armazenar digitos             */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
+void extrai_digito(unsigned int numero, unsigned char* digitos){
+    
+    unsigned char i = 0;
+    unsigned int x = 1;
+    unsigned int sobra = 0;
+    
+    /*Ja inicializa cada digito com "0" (tabela ASCII)*/
+    digitos[0] = 48;
+    digitos[1] = 48;
+    digitos[2] = 48;
+    digitos[3] = 48;
 
-		/* sets the RGB led color */
-        ledrgb_write(cLedColor);
-
-		/* increments the ledColor from 0 to 7 */
-        if(++cLedColor>7)
-			cLedColor = 0;
-
-		/* wait 100ms doing anything! */
-        util_genDelay100ms();
+    /*Checar quantos digitos tem no numero*/
+    while(numero > x){
+        x *= 10;
+        i++;
+    }
+    
+    x /= 10;
+    
+    /*Divide por uma potencia de 10 para sobrar um digito so*/
+    /*Extrai o digito e armazena no vetor +48 (ASCII)       */
+    while(i > 0){
+        sobra = numero/x;
+        digitos[4-i] = (sobra + 48);
+        
+        numero -= (sobra*x);
+        x /= 10;
+        
+        
+        
+        i--;
+        
     }
 
+    return;
+    
 }
+
+/* **************************************************************************** */
+/* Nome do metodo:          boardInit                                           */
+/* Descricao:               Inicializa os parametros necessarios para o         */
+/*                          teste                                               */
+/*                                                                              */
+/* Parametros de entrada:   n/a                                                 */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
+void boardInit(void)
+{
+    boardInit();
+    /* executando rotina de inicializacao:   
+        * Placa do microcontrolador 
+        * Configuração da modulação PWM 
+        * Inicialização do cooler 
+        * Inicialização do tacometro 
+        * Inicialização do lcd
+    */
+    PWM_init();
+    coolerfan_init();
+    tachometer_init();
+    lcd_initLcd();
+}
+
+
+
+/* **************************************************************************** */
+/* Nome do metodo:          main                                                */
+/* Descricao:               Inicializa o aquecedor e o cooler com 50% da tensão */
+/*                                                                              */
+/*                                                                              */
+/* Parametros de entrada:   n/a                                                 */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
+int main(void){
+
+    boardInit();
+
+    while(1){
+
+        /*Sempre que ocorrer uma interrupcao, a condicao eh cumprida*/
+        if(1 == ucFlag){ 
+
+            /* Armazena os dois bytes em um array e escreve no LCD (em formato hexadecimal)
+            *  o valor da velocidade RPM */
+            extrai_digito(uiRotacao, digitos);
+            ucFlag = 0;
+            lcd_writeString(digitos);
+        }
+
+    }
+
+
+}   
