@@ -9,7 +9,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              08/05/2020                                             */
-/*   Ultima revisao em:      08/05/2020                                             */
+/*   Ultima revisao em:      10/05/2020                                             */
 /* ******************************************************************************** */
 
 #ifndef SOURCES_TACHOMETER_

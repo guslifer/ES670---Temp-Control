@@ -8,7 +8,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              13/04/2020                                             */
-/*   Ultima revisao em:      13/04/2020                                             */
+/*   Ultima revisao em:      10/05/2020                                             */
 /* ******************************************************************************** */
 
 #include "board.h"
