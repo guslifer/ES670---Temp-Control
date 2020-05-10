@@ -7,7 +7,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e GiÃ¡como Dollevedo                      */
 /*   Criado em:              07/04/2020                                             */
-/*   Ultima revisÃ£o em:     09/04/2020                                             */
+/*   Ultima revisÃ£o em:     10/05/2020                                             */
 /* ******************************************************************************** */
 
 #include "lcd.h"
