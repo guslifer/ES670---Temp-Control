@@ -8,7 +8,7 @@
 /*                                                                          */
 /*   Autores:                Gustavo Lino e Giácomo Dollevedo               */
 /*   Criado em:              31/03/2020                                     */
-/*   Ultima revisão em:      23/04/2020                                     */
+/*   Ultima revisão em:      10/04/2020                                     */
 /* ************************************************************************ */
 
 
@@ -28,6 +28,8 @@
 #define BLUE_LED_PORT_BASE_PNT   PORTD /* peripheral port base pointer */
 #define BLUE_LED_GPIO_BASE_PNT   PTD   /* peripheral gpio base pointer */
 #define BLUE_LED_PIN             (uint32_t) 1u
+
+
 
 
 
@@ -60,9 +62,15 @@
 #define uiSetPinAsGPIO         0x100
 #define uiSetClockPort         0x0200
 
-#define PORTA_CLOCK_GATE		0x0200
+/*CLOCK PORT ENABLE*/ 
+#define PORTA_CLOCK_GATE	   0x0200
+#define PORTB_CLOCK_GATE       0x0400
+#define PORTC_CLOCK_GATE       0x0800
+#define PORTD_CLOCK_GATE       0x1000
+#define PORTE_CLOCK_GATE       0x2000
 
 #define MUX_ALT3				0x300
+#define MUX_ALT4				0x400
 
 
 /* Configuração dos set-up para utilziar o LCD
@@ -71,7 +79,7 @@
  * Quando (LCD_RS = LCD_RS_LOW => Registrador de instruções é selecionado.
  */
 
-#define uiSetClockPortC          0x0800
+
 #define LCD_GPIO_BASE_PNT        PTC
 
 #define LCD_RS_PIN               8U
@@ -131,6 +139,12 @@
 
 /* Final das definições do LCD para a placa */
 
+/*Configuração dos set-ups para utilziar o Tacometro*/ 
+#define SET_LTPMR0			 	0X01
+#define TPM_EXTERNAL_CLOCK		0x10
+#define TPM_MAX_VALUE_COUNT		0x0FFFF
+#define TPM0CLKSEL_AS_CLKIN0	0x00
+#define TPM0CLKSEL_AS_CLKIN1	0x01000000
 
 
 #endif /* SOURCES_BOARD_H_ */

@@ -8,7 +8,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              08/05/2020                                             */
-/*   Ultima revisao em:      08/05/2020                                             */
+/*   Ultima revisao em:      10/05/2020                                             */
 /* ******************************************************************************** */
 
 #include "board.h"
@@ -57,10 +57,10 @@ unsigned int tachometer_readSensor(unsigned int uiPeriod){
 
 unsigned int iCounted = TPM_CNT; 
 TPM_CNT &= 0x0000;
-int iRotations = iCounted/7;
+unsigned int iRotations = iCounted/7;
 
-int iCoolerFreq = iCounted/uiPeriod;
-int iCoolerRPM = iCoolerFreq * 60;
+unsigned int iCoolerFreq = iCounted/uiPeriod;
+unsigned int iCoolerRPM = iCoolerFreq * 60;
 
 return iCoolerRPM;
 
