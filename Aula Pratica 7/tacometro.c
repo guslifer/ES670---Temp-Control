@@ -8,7 +8,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              08/05/2020                                             */
-/*   Ultima revisao em:      10/05/2020                                             */
+/*   Ultima revisao em:      08/05/2020                                             */
 /* ******************************************************************************** */
 
 #include "board.h"
@@ -29,7 +29,7 @@ void tachometer_init(){
 
 //Liberar o Clock para o timer E Clock para porta E
 	SIM_SCGC6 |= PORTE_CLOCK_GATE;
-	SIM_SCGC6 |= SET_LTPMRO;
+	SIM_SCGC6 |= SET_LTPMR0;
 //Configurar o divisor de clock em 1
 	TPM0_SC  |= CLOCK_DIVIDER_1;
 
@@ -55,8 +55,8 @@ void tachometer_init(){
 /* ******************************************************************************** */
 unsigned int tachometer_readSensor(unsigned int uiPeriod){
 
-unsigned int iCounted = TPM_CNT; 
-TPM_CNT &= 0x0000;
+unsigned int iCounted = TPM0_CNT;
+TPM0_CNT &= 0x0000;
 unsigned int iRotations = iCounted/7;
 
 unsigned int iCoolerFreq = iCounted/uiPeriod;

@@ -43,7 +43,7 @@ void lcd_initLcd(void)
     /* pins configured as outputs */
 
     /* un-gate port clock*/
-    SIM_SCGC5 |= uiSetClockPortC;
+    SIM_SCGC5 |= uiSetClockPort;
 
     /* set pin as gpio */
     PORTC_PCR0 |= uiSetPinAsGPIO;
