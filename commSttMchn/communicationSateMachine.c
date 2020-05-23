@@ -10,10 +10,20 @@
 /*   Ultima revisao em:      21/05/2020                                             */
 /* ******************************************************************************** */
 
-#include "board.h"
-#include "UART.h"
-#include "ledSwi.h"
 
+/* Comandos utilizados (dicionario): 
+   "#gt;" Get valor de temperatura atual 
+   "#gc;" Get Duty Cycle Cooler 
+   "#gh;" Get Duty Cycle Heater 
+
+   "#sb<N>;" Set Button On/OFF, onde N é qualquer número de até de 7 bytes. 
+   "#st<N>;" Set Temperatura Máxima desejada para controle, onde N é qualquer número de até de 7 bytes. 
+
+   "<#a<p>;" Respostas do parametro solicitado, onde p pode ser t,c ou h. 
+
+   É previsto nas próximas versões do código que haja a solicitação de todos os parametros e sua respostas
+
+*/
 #define IDLE    0
 #define READY   1
 #define GET     2
@@ -43,27 +53,30 @@ fHeaterDutyTest[3] = '0';
 
 /* ******************************************************************************** */
 /* Nome do metodo:          returnParam                                             */ 
-/* Descricao:               Realiza todos os processos para que a comunicacao UART  */
-/*                          ocorra, baseado numa maquina de estados                 */
+/* Descricao:               Imprime no terminal de comunicacao UART os parametros   */
+/*                          solicitados pelo comando Get                 			*/
 /*                                                                                  */
-/* Parametros de entrada:    n/a                                                    */
+/* Parametros de entrada:    Parametro solicitado (de acordo com dicionario)        */
 /*                                                                                  */
-/* Parametros de saida:      n/a                                                    */
+/* Parametros de saida:      Comunicação UART -> parametro solicitado				*/
+/*							 temperatura atual 										*/
+/*							 duty cycle cooler										*/
+/*							 duty cycle heater									    */            
 /* ******************************************************************************** */
 void returnParam(unsigned char ucParam){
 
     switch(ucParam){
 
         case 't':
-            debug_putchar(ucCurrTempTest);
+            debug_printf("#a%c;", ucCurrTempTest);
             break;
 
         case 'c':
-            debug_printf("%c%c%c%c", fCoolerDutyTest[0], fCoolerDutyTest[1], fCoolerDutyTest[2], fCoolerDutyTest[3]);
+            debug_printf("#a%c%c%c%c;", fCoolerDutyTest[0], fCoolerDutyTest[1], fCoolerDutyTest[2], fCoolerDutyTest[3]);
             break;
 
         case 'h':
-            debug_printf("%c%c%c%c", fHeaterDutyTest[0], fHeaterDutyTest[1] ,fHeaterDutyTest[2], fHeaterDutyTest[3]);
+            debug_printf("#a%c%c%c%c;", fHeaterDutyTest[0], fHeaterDutyTest[1] ,fHeaterDutyTest[2], fHeaterDutyTest[3]);
             break;
 
     }
@@ -74,12 +87,14 @@ void returnParam(unsigned char ucParam){
 
 /* ******************************************************************************** */
 /* Nome do metodo:          setParam                                                */ 
-/* Descricao:               Realiza todos os processos para que a comunicacao UART  */
-/*                          ocorra, baseado numa maquina de estados                 */
+/* Descricao:               Define valores de controle/usabilidade necessarios para */
+/*                          garantir a interface e funcionamento adequado do uC:	*/
+/*							Temperatura Máxima										*/
+/*							Disponibilidade dos botoões							    */
 /*                                                                                  */
-/* Parametros de entrada:    n/a                                                    */
+/* Parametros de entrada:    Configuração desejado (de acordo com dicionario)       */
 /*                                                                                  */
-/* Parametros de saida:      n/a                                                    */
+/* Parametros de saida:      Função ou ação sobre as variaveis                      */
 /* ******************************************************************************** */
 void setParam(unsigned char ucParam, unsigned char ucValue){
 
@@ -89,7 +104,7 @@ void setParam(unsigned char ucParam, unsigned char ucValue){
             ucMaxTempTest = ucValue;
             break;
 
-
+//Habilitar ou desabilitar os botões da interface do microcontrolador.
         case 'b':
             if(ucValue > 0){
                 ledSwi_init(0, 0, 0, 0);
@@ -102,7 +117,6 @@ void setParam(unsigned char ucParam, unsigned char ucValue){
 
     }
 
-
 }
 
 
@@ -111,7 +125,7 @@ void setParam(unsigned char ucParam, unsigned char ucValue){
 /* Descricao:               Realiza todos os processos para que a comunicacao UART  */
 /*                          ocorra, baseado numa maquina de estados                 */
 /*                                                                                  */
-/* Parametros de entrada:    n/a                                                    */
+/* Parametros de entrada:    Comandos em Bytes enviados através da comunicação UART */
 /*                                                                                  */
 /* Parametros de saida:      n/a                                                    */
 /* ******************************************************************************** */

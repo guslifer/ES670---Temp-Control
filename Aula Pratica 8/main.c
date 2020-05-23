@@ -16,6 +16,8 @@
 #include "aquecedorECooler.h"
 #include "lptmr.h"
 #include "lcd.h"
+#include "UART.h"
+#include "prins_scan.h"
 
 
 unsigned int ui250ms    = 250000;
@@ -26,12 +28,24 @@ unsigned char ucFlag = 0;
 unsigned char digitos[4] = "0"; 
 
 
+/*
+    Rotina de inicialização da comunicação UART 
+    com o uC, inicializa o padrão de comunicação
+    e habilita a interrupção
+*/ 
+
+
+UART0_init(); 
+UART0_enableIRQ(); 
+
+
+
 /*  
  *  Rotina de interrupcao executada pelo timer LPTMR0
  *      - Retorna a rotacao (RPM) em uiRotacao
  *      - Flipa uma flag para escrever no LCD
 */
-void main_cyclicExecuteIsr(void){
+main_cyclicExecuteIsr(void){
 
     uiRotacao = tachometer_readSensor(ui250ms);
     ucFlag = 1;
@@ -39,7 +53,7 @@ void main_cyclicExecuteIsr(void){
 }
 
 /* Instalando a rotina com um periodo de 250ms no timer */
-void tc_installLptmr0(ui250ms, main_cyclicExecuteIsr);
+tc_installLptmr0(ui250ms, main_cyclicExecuteIsr);
 
 
 
@@ -144,8 +158,5 @@ int main(void){
             ucFlag = 0;
             lcd_writeString(digitos);
         }
-
     }
-
-
 }   

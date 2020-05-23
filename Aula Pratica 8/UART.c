@@ -15,7 +15,7 @@
 #include "fsl_port_hal.h"
 #include "fsl_smc_hal.h"
 #include "fsl_debug_console.h"
-
+#include "communicationStateMachine.h"
 
 /* UART definitions */
 #ifndef BOARD_DEBUG_UART_INSTANCE
@@ -77,7 +77,8 @@ void UART0_enableIRQ(void)
 /* ************************************************ */
 void UART0_IRQHandler(void)
 {
-	// Echo received character
-	debug_putchar(debug_getchar());
+	// Solicita o processo de tratamento de byte recebido pela UART
+	processByteCommUART(debug_getchar());
+
 }
 
