@@ -7,7 +7,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              21/05/2020                                             */
-/*   Ultima revisao em:      03/05/2020                                             */
+/*   Ultima revisao em:      06/05/2020                                             */
 /* ******************************************************************************** */
 
 
@@ -26,6 +26,9 @@
    É previsto nas próximas versões do código que haja a solicitação de todos os parametros e sua respostas
 
 */
+
+#include "aquecedorECooler.h"
+
 #define IDLE    0
 #define READY   1
 #define GET     2
@@ -117,7 +120,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             aux     = 0;
             while("\0" != ucValue[i]){
                 if('1' == ucValue[0]){
-                    /*setar cooler para 100% duty cycle*/
+                    coolerfan_PWMDuty(1.0);
                     break;
                 }
 
@@ -137,7 +140,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
                 while(aux > 0)
                     aux = aux/10;
 
-            /* setar duty cycle do cooler aqui*/
+            coolerfan_PWMDuty(aux);
             }
 
             break;
@@ -149,7 +152,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             aux     = 0;
             while("\0" != ucValue[i]){
                 if('1' == ucValue[0]){
-                    /*setar heater para 50% duty cycle*/
+                    heater_PWMDuty(0.5);
                     break;
                 }
 
@@ -170,9 +173,10 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
                     aux = aux/10;
 
                 if(0.5 < aux)
-                    /*setar heater para 50% duty cycle*/
+                    heater_PWMDuty(0.5);
                 
-                /* setar duty cycle do heater aqui*/
+                else
+                    heater_PWMDuty(aux);
             }
         
             break;
