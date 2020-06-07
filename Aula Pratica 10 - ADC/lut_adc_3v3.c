@@ -12,7 +12,7 @@
  *                   modificado para o range 0 - 3v3                     *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-const unsigned char tabela_temp[256] = {
+extern const unsigned char tabela_temp[256] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,                    //15
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,                    //31
     1, 1, 2, 2, 3, 3, 3, 3, 4, 4, 5, 5, 6, 6, 6, 6,                    //47
