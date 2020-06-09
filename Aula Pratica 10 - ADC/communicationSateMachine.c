@@ -7,7 +7,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              21/05/2020                                             */
-/*   Ultima revisao em:      06/05/2020                                             */
+/*   Ultima revisao em:      09/06/2020                                             */
 /* ******************************************************************************** */
 
 
@@ -99,7 +99,31 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
     switch(ucParam){
 
         case 't':
-            /* IMPLEMENTAR */
+            i       = 0;
+            flag    = 0;
+            aux     = 0;
+            while("\0" != ucValue[i]){
+
+                if(',' == ucValue[i]){
+                    break;
+                }
+
+                else{
+                	aux += ucValue[i] - 48;
+                	aux = aux*10;
+                }
+
+                i++;
+            }
+
+            if(aux >= 70){
+            	ucMaxTempTest = 70;
+            }
+
+            else{
+            	ucMaxTempTest = aux;
+            }
+
             break;
 
 //Habilitar ou desabilitar os botões da interface do microcontrolador.
