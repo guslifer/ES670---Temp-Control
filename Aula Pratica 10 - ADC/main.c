@@ -3,11 +3,11 @@
 /*   Nome do arquivo:        main.c                                                 */
 /*                                                                                  */
 /*   Descricao:             Arquivo main para teste das funcoes implementadas       */
-/*                           para o microcontrolador utilizar o protocolo UART      */
+/*                           para o microcontrolador utilizar o ADC     			*/
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo A. Dollevedo                	*/
 /*   Criado em:              23/05/2020                                             */
-/*   Ultima revisao em:   	 23/05/2020                                             */
+/*   Ultima revisao em:   	 09/06/2020                                             */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */
@@ -27,6 +27,16 @@
 int iTemp_Atual = 0;
 unsigned int uiTemp_convertida = 0;
 
+
+/* **************************************************************************** */
+/* Nome do metodo:          boardInit                                           */
+/* Descricao:               Inicializa os parametros necessarios para o         */
+/*                          teste                                               */
+/*                                                                              */
+/* Parametros de entrada:   n/a                                                 */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
 void boardInit()
 {
 
@@ -41,8 +51,18 @@ void boardInit()
     adc_initADCModule();
  
 }
-// Função para leitura do sensor de temperatura, futuramente será chamada com um frequencia pré determinada.
-// Só retorna após garantir que o a conversão foi finalizada
+
+/* **************************************************************************** */
+/* Nome do metodo:          readTempSensor                                      */
+/* Descricao:               Faz a leitura do ADC e retorna o valor numa			*/
+/*							variavel global										*/
+/*                                                                              */
+/*                                                                              */
+/* Parametros de entrada:   n/a                                                 */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
+// Futuramente será chamada com um frequencia pré determinada.
 void readTempSensor(){
 
 	adc_initConvertion();
@@ -58,7 +78,7 @@ void readTempSensor(){
 
 /* **************************************************************************** */
 /* Nome do metodo:          main                                                */
-/* Descricao:               Testa GET e SET da maquina de estados 				*/
+/* Descricao:               Testa a leitura do ADC e envia para o LCD 			*/
 /*                                                                              */
 /*                                                                              */
 /* Parametros de entrada:   n/a                                                 */

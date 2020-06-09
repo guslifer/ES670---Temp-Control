@@ -7,7 +7,7 @@
 /*                   bus clock @ 20MHz                               */
 /* Author name:      dloubach                                        */
 /* Creation date:    09jan2015                                       */
-/* Revision date:    09mar2016                                       */
+/* Revision date:    09jun2020                                       */
 /* ***************************************************************** */
 
 #ifndef UTIL_H
