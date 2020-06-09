@@ -26,6 +26,7 @@
 
 int iTemp_Atual = 0;
 unsigned int uiTemp_convertida = 0;
+extern const unsigned char tabela_temp[256];
 
 
 /* **************************************************************************** */
