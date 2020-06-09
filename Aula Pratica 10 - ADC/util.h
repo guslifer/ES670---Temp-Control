@@ -56,5 +56,16 @@ void util_genDelay10ms(void);
 /* ************************************************ */
 void util_genDelay100ms(void);
 
+/* **************************************************************************** */
+/* Nome do metodo:          extrai_digito                                    	*/
+/* Descricao:               Extrai digitos de um numero e armazena num vetor 	*/
+/*                                                                              */
+/*                                                                              */
+/* Parametros de entrada:   numero -> numero que os digitos serao extraidos		*/
+/*							digitos -> vetor onde os digitos serao armazenados  */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
+void extrai_digito(unsigned int numero, unsigned char* digitos);
 
 #endif /* UTIL_H */

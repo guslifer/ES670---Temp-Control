@@ -35,6 +35,9 @@
 #define ADC_SC1A_INTERRUPT    0U
 #define ADC_SC1A_DIFFERENTIAL 0U
 
+#define CGC_CLOCK_ENABLED 1 //ASSUMINDO QUE SEJA 1 OU 0 (NAO TINHA NOS DEFINES).
+							//pra arrumar (se n funcionar) pagina 206 do KL25 Sub-Family Reference Manual
+
 /* *************************************************** */
 /* Method name:        adc_initADCModule               */
 /* Method description: Init a the ADC converter device */
