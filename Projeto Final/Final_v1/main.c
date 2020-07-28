@@ -236,6 +236,9 @@ void boardInit()
     pid_setKp(FKP);
     pid_setKD(FKD);
 
+    /*Inicializa a comunicação UART*/ 
+    UART0_init(); 
+
 }
 
 
@@ -564,6 +567,7 @@ int main(void){
             ucLCDFrame = 2;
             /*Inicializa os 3 primeiros LEDs e o ultimo botao*/
             /*Botao 4 => "/Reset"*/
+            UART0_enableIRQ();
             turnOffLED(1);
 
             /*NOVA ATUALIZAÇÃO DE CONTROLE NECESSÁRIA*/
