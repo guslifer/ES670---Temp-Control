@@ -73,6 +73,7 @@ extern const unsigned char tabela_temp[256];
 
 /*Variaveis para manter controle do tempo durante execucao*/
 unsigned char ucContador1       = 0;
+unsigned char ucContador2       = 0;
 unsigned char ucContadorCtrl    = 0;
 unsigned char ucSegundos        = 0;
 unsigned char ucMinutos         = 0;
@@ -123,6 +124,7 @@ void readTemp(){
 void timerAtt(){
 
     ucContador1++;
+    ucContador2++;
     ucD7Flag = 1;
 
 }
@@ -139,8 +141,8 @@ void timerAtt(){
 /* **************************************************************************** */
 void checkTime(){
 
-    if(25 <= ucContador1){ //A cada 100ms
-        ucContador1 = 0;
+    if(25 <= ucContador2){ //A cada 100ms
+        ucContador2 = 0;
         ucContadorCtrl++;
     }
 
@@ -577,7 +579,7 @@ int main(void){
                 fDutyCycleHeater = pidUpdateDate(ucTempAtual, ucTempAlvo, fDutyCycleHeater); 
                 heater_PWMDuty(fDutyCycleHeater)
             }
-            /*DEVE INDICAR SE A TEMPERATURA ESTA ACIMA OU ABAIXO DO ALVO*/
+            /*DEVE INDICAR SE A TEMPERATURA ESTA ACIMA, ABAIXO OU IGUAL AO ALVO*/
             if(ucTempAtual > ucTempAlvo){ 
                 turnOffLED(2);
                 turnOffLED(3);  
@@ -589,6 +591,11 @@ int main(void){
                 turnOffLED(3);  
                 turnOnLED(2)
             }
+            else if(ucTempAtual == ucTempAlvo){  
+                turnOnLED(2);
+                turnOnED(3);  
+            }
+
             /*DEVE RETORNAR PARA O MENU DE CONFIGURACAO CASO O BOTAO OK SEJA PRESSIOANDO*/
             if(1 == readSwitch(4)){
                 util_genDelay100ms();
@@ -598,8 +605,6 @@ int main(void){
                 ledSwit_init(1, 0, 0, 0);
                 break;
             }
-
-        
             break;
         }
     }
