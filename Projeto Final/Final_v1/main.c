@@ -434,6 +434,10 @@ int main(void){
         /*ESTADO DE CONTROLE DE TEMPERATURA*/
         case CONTROLE:
             break;
+
+                //Numa mão ta o copção com whisky e red bull
+                // Na outra o lança perfume 
+                //encomendei mais um
         }
     }
 }
