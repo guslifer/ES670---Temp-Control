@@ -60,7 +60,7 @@ unsigned char ucSubestado1  = 0;
 unsigned char ucSubestado2  = 0;
 
 /*Variaveis referentes a temperatura*/
-ucTempAlvo                      = TEMP_DEFAULT;
+unsigned char ucTempAlvo        = TEMP_DEFAULT;
 unsigned char ucTempAtual       = 0;
 unsigned char ucDezTempAlvo     = 0;
 unsigned char ucUnTempAlvo      = 0;
