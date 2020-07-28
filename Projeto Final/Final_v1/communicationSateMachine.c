@@ -20,7 +20,7 @@
    "#gh;" Get Duty Cycle Heater 
 
    "#sb<N>;" Set Button On/OFF, onde N é qualquer número de até de 7 bytes. 
-   "#st<N>;" Set Temperatura Máxima desejada para controle, onde N é qualquer número de até de 7 bytes. 
+   "#st<N>;" Set Temperatura Máxima desejada para controle, onde N é qualquer número de até de 7 byte. 
    "#sc<N>;" Set duty cycle do cooler, onde N é qualquer número de até de 7 bytes.
    "#sh<N>;" Set duty cycle do heater, onde N é qualquer número de até de 7 bytes.
 
@@ -104,7 +104,20 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
 
         case 't':
             while('\0' != ucValue[ucContador]){
-                ucMaxTempTest[ucContador] = ucValue[ucContador];
+            //Pega o valor da dezena                
+                if(0 == ucContador){ 
+                    fAux = ucValue[ucContador] -48;
+                    fAux = fAux*10;
+                }
+            //Pega o valor da unidade    
+                else if(1 == ucContador){ 
+                    fAux = fAux + (ucValue[ucContador] -48);
+                    ucTempAlvo = fAux;
+                }
+                if(2 < ucContador){ 
+            //Caso o usuario tente inserir uma temperatura maior que 2 digitos, seta a temperatura alvo par ao padrão    
+                    ucTempAlvo = 30;
+                }
                 ucContador++;
             }
             break;

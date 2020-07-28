@@ -20,6 +20,7 @@
 #include "ledSwi.h"
 #include "pid.h"
 #include "display7seg.h"
+#include "uart.h"
 
 
 /********************************************************************************/
@@ -59,7 +60,7 @@ unsigned char ucSubestado1  = 0;
 unsigned char ucSubestado2  = 0;
 
 /*Variaveis referentes a temperatura*/
-unsigned char ucTempAlvo        = TEMP_DEFAULT;
+ucTempAlvo                      = TEMP_DEFAULT;
 unsigned char ucTempAtual       = 0;
 unsigned char ucDezTempAlvo     = 0;
 unsigned char ucUnTempAlvo      = 0;
