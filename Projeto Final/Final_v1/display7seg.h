@@ -25,6 +25,17 @@
 /* ******************************************************************************** */
 void display7seg_init(void);
 
+/* ******************************************************************************** */
+/* Nome do metodo:          display7seg_writeChar 									*/
+/* Descricao:               Escreve uma letra em um D7S                           	*/
+/*                                                                                  */
+/* Parametros de entrada:   ucDisplay -> indica o D7S no qual sera escrito (1 a 4)  */
+/*                          ucValue -> valor indicando a letra que sera escrita 	*/
+/*                                                                                  */
+/* Parametros de saida:     n/a                                                     */
+/* ******************************************************************************** */
+void display7seg_writeChar(unsigned char ucDisplay, unsigned char ucChar);
+
 
 /* ******************************************************************************** */
 /* Nome do metodo:          display7seg_writeSymbol                                 */ 

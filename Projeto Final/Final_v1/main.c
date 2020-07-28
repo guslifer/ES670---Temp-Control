@@ -16,7 +16,7 @@
 #include "adc.h"
 #include "lut_adc_3v3.h"
 #include "lptmr.h"
-#include "lcd.h"
+#include "lcdTemp.h"
 #include "ledSwi.h"
 #include "pid.h"
 #include "display7seg.h"
@@ -162,46 +162,6 @@ void checkTime(){
 
 }
 
-/* **************************************************************************** */
-/* Nome do metodo:          showLCDdisp                                         */
-/* Descricao:               Realiza a troca de mensagem no LCD de acordo com    */
-/*                          estado                                              */
-/*                                                                              */
-/* Parametros de entrada:   unsigned char ucFrame -> Indica o frame que sera    */
-/*                          mostrado                                            */
-/*                                                                              */
-/* Parametros de saida:     n/a                                                 */
-/* **************************************************************************** */
-void showLCDdisp(unsigned char ucFrame){
-
-    switch(ucFrame){
-    case 0:
-        /*Nada*/
-        break;
-
-    case 1:
-        lcd_setCursor(LINE0,0);
-        lcd_writeString("Configure a Temp");
-        lcd_setCursor(LINE1,0);
-        lcd_writeString("Temp Alvo: 00C");
-        break;
-
-     case 2:
-        lcd_setCursor(LINE0,0);
-        lcd_writeString("UART HABILITADO");
-        lcd_setCursor(LINE1,0);
-        lcd_writeString("Temp Alvo:   C");
-        lcd_setCursor(LINE1,11);
-        lcd_writeData(ucDezTempAlvo);
-        lcd_setCursor(LINE1,12);
-        lcd_writeData(ucUnTempAlvo);
-        break;
-
-     default:
-         break;
-    }
-
-}
 
 /* **************************************************************************** */
 /* Nome do metodo:          boardInit                                           */
@@ -224,7 +184,7 @@ void boardInit()
     display7seg_init();
 
     /*Inicializa o display LCD*/
-    lcd_initLcd();
+    lcdTemp_init();
 
     /*Inicializa um timer com tick de 4ms para atualizacao dos displays*/
     /*e controle de tempo interno do sistema*/
@@ -268,13 +228,19 @@ int main(void){
             display7seg_writeSymbol(1, ucDezTempAtual);
             display7seg_writeSymbol(2, ucUnTempAtual);
             display7seg_writeSymbol(3, 20);
-            display7seg_writeSymbol(4, 'C'); // IMPLEMENTAR NO D7S ESCRITA DE LETRAS!
+            display7seg_writeChar(4, 'c');
 
         }
 
         /*Atualiza o LCD com o frame correto*/
         /*1 -> CONFIG; 2 -> CONTROLE*/
-        showLCDdisp(ucLCDFrame);
+        if(0 != ucLCDFrame){
+            ucDisableD7 = 1;
+            showLCDdisp(ucLCDFrame);
+            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+            ucDisableD7 = 0;
+        }
+        
 
         /*Se o sistema fica inoperado por 2 minutos, uma temperatura padrao eh*/
         /*setada, e o sistema passa para o estado de CONTROLE*/
@@ -305,8 +271,6 @@ int main(void){
                 case STATE_0:
                     /*Caso "OK" pressionado*/
                     if(1 == readSwitch(4)){
-                        /*TBD: Armazenar a dezena atual e passar para o estado da unidade*/
-                        /*TBD: ATUALIZAR LCD*/
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
                         ucSubestado2 = STATE_0;
@@ -317,19 +281,19 @@ int main(void){
                     else if(1 == readSwitch(3)){
                         util_genDelay100ms();
                         ucDezTempAlvo++;
-                        lcd_setCursor(LINE1,11);
-                        lcd_writeData(ucDezTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_N;
                         break;  
                     }
 
                     /*Caso "-" pressionado*/
                     else if(1 == readSwitch(2)){
-                        /*TBD: Altera para o estado 0*/
-                        /*TBD: Atualizar display e valor da temperatura*/
                         util_genDelay100ms();
-                        lcd_setCursor(LINE1,11);
-                        lcd_writeData(ucDezTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_0;
                         break;
                     }
@@ -338,8 +302,6 @@ int main(void){
                 case STATE_N:
                     /*Caso "OK" pressionado*/
                     if(1 == readSwitch(4)){
-                        /*TBD: Armazenar a dezena atual e passar para o estado da unidade*/
-                        /*TBD: ATUALIZAR LCD*/
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
                         ucSubestado2 = STATE_0;
@@ -351,15 +313,17 @@ int main(void){
                         util_genDelay100ms();
                         if(8 == ucDezTempAlvo){
                             ucDezTempAlvo++;
-                            lcd_setCursor(LINE1,11);
-                            lcd_writeData(ucDezTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_9;
                         }
 
                         else{
                             ucDezTempAlvo++;
-                            lcd_setCursor(LINE1,11);
-                            lcd_writeData(ucDezTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_N;
                         }
                         break;
@@ -367,21 +331,21 @@ int main(void){
                     
                     /*Caso "-" pressionado*/
                     else if(1 == readSwitch(2)){
-                        /*TBD: Altera para o estado N*/
-                        /*TBD: Atualizar display e valor da temperatura*/
                         util_genDelay100ms();
 
                         if(1 == ucUnTempAlvo){
                             ucDezTempAlvo--;
-                            lcd_setCursor(LINE1,11);
-                            lcd_writeData(ucDezTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_0;
                         }
 
                         else{
                             ucDezTempAlvo--;
-                            lcd_setCursor(LINE1,11);
-                            lcd_writeData(ucDezTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_N;
                         }
                         break;
@@ -391,8 +355,6 @@ int main(void){
                 case STATE_9:
                     /*Caso "OK" pressionado*/
                     if(1 == readSwitch(4)){
-                        /*TBD: Armazenar a dezena atual e passar para o estado UNIDADE e para STATE_0*/
-                        /*TBD: ATUALIZAR LCD*/
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
                         ucSubestado2 = STATE_0;
@@ -402,20 +364,20 @@ int main(void){
                     /*Caso "+" pressionado*/
                     else if(1 == readSwitch(3)){
                         util_genDelay100ms();
-                        lcd_setCursor(LINE1,11);
-                        lcd_writeData(ucDezTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_9;
                         break;
                     }
                     
                     /*Caso "-" pressionado*/
                     else if(1 == readSwitch(2)){
-                        /*TBD: Altera para o estado N*/
-                        /*TBD: Atualizar display e valor da temperatura*/
                         util_genDelay100ms();
                         ucDezTempAlvo--;
-                        lcd_setCursor(LINE1,11);
-                        lcd_writeData(ucDezTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_N;
                         break;
                     }
@@ -428,8 +390,6 @@ int main(void){
                 case STATE_0:
                     /*Caso "OK" pressionado*/
                     if(1 == readSwitch(4)){
-                        /*TBD: Armazenar a unidade atual e passar para o controle*/
-                        /*TBD: ATUALIZAR LCD*/
                         util_genDelay100ms();
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
@@ -444,19 +404,19 @@ int main(void){
                     else if(1 == readSwitch(3)){
                         util_genDelay100ms();
                         ucUnTempAlvo++;
-                        lcd_setCursor(LINE1,12);
-                        lcd_writeData(ucUnTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_N;
                         break;  
                     }
 
                     /*Caso "-" pressionado*/
                     else if(1 == readSwitch(2)){
-                        /*TBD: Altera para o estado 0*/
-                        /*TBD: Atualizar display e valor da temperatura*/
                         util_genDelay100ms();
-                        lcd_setCursor(LINE1,12);
-                        lcd_writeData(ucUnTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_0;
                         break;
                     }
@@ -465,8 +425,6 @@ int main(void){
                 case STATE_N:
                     /*Caso "OK" pressionado*/
                     if(1 == readSwitch(4)){
-                        /*TBD: Armazenar a dezena atual e passar para o estado da unidade*/
-                        /*TBD: ATUALIZAR LCD*/
                         util_genDelay100ms();
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
@@ -482,15 +440,17 @@ int main(void){
                         util_genDelay100ms();
                         if(8 == ucUnTempAlvo){
                             ucUnTempAlvo++;
-                            lcd_setCursor(LINE1,12);
-                            lcd_writeData(ucUnTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_9;
                         }
 
                         else{
                             ucUnTempAlvo++;
-                            lcd_setCursor(LINE1,12);
-                            lcd_writeData(ucUnTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_N;
                         }
                         break;
@@ -498,21 +458,21 @@ int main(void){
                     
                     /*Caso "-" pressionado*/
                     else if(1 == readSwitch(2)){
-                        /*TBD: Altera para o estado N*/
-                        /*TBD: Atualizar display e valor da temperatura*/
                         util_genDelay100ms();
 
                         if(1 == ucUnTempAlvo){
                             ucUnTempAlvo--;
-                            lcd_setCursor(LINE1,12);
-                            lcd_writeData(ucUnTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_0;
                         }
 
                         else{
                             ucUnTempAlvo--;
-                            lcd_setCursor(LINE1,12);
-                            lcd_writeData(ucUnTempAlvo+48);
+                            ucDisableD7 = 1;
+                            attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                            ucDisableD7 = 0;
                             ucSubestado2 = STATE_N;
                         }
                         break;
@@ -522,8 +482,6 @@ int main(void){
                 case STATE_9:
                     /*Caso "OK" pressionado*/
                     if(1 == readSwitch(4)){
-                        /*TBD: Armazenar a dezena atual e passar para o estado UNIDADE e para STATE_0*/
-                        /*TBD: ATUALIZAR LCD*/
                         util_genDelay100ms();
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
@@ -536,22 +494,21 @@ int main(void){
 
                     /*Caso "+" pressionado*/
                     else if(1 == readSwitch(3)){
-                        /*Nada acontece*/
                         util_genDelay100ms();
-                        lcd_setCursor(LINE1,12);
-                        lcd_writeData(ucUnTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_9;
                         break;
                     }
                     
                     /*Caso "-" pressionado*/
                     else if(1 == readSwitch(2)){
-                        /*TBD: Altera para o estado N*/
-                        /*TBD: Atualizar display e valor da temperatura*/
                         util_genDelay100ms();
                         ucUnTempAlvo--;
-                        lcd_setCursor(LINE1,12);
-                        lcd_writeData(ucUnTempAlvo+48);
+                        ucDisableD7 = 1;
+                        attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+                        ucDisableD7 = 0;
                         ucSubestado2 = STATE_N;
                         break;
                     }
@@ -562,7 +519,6 @@ int main(void){
         /*ESTADO DE CONTROLE DE TEMPERATURA*/
         case CONTROLE:
             ucLCDFrame = 2;
-            /*Inicializa os 3 primeiros LEDs e o ultimo botao*/
             /*Botao 4 => "/Reset"*/
             turnOffLED(1);
 
@@ -587,7 +543,7 @@ int main(void){
             /*DEVE RETORNAR PARA O MENU DE CONFIGURACAO CASO O BOTAO OK SEJA PRESSIOANDO*/
             if(1 == readSwitch(4)){
                 util_genDelay100ms();
-                ucSubestado1 = UNIDADE;
+                ucSubestado1 = DEZENA;
                 ucSubestado2 = STATE_0;
                 ucEstado = CONFIG;
                 ledSwit_init(1, 0, 0, 0);
