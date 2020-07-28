@@ -85,10 +85,9 @@ unsigned char ucDisableD7   = 0;
 
 
 /* **************************************************************************** */
-/* Nome do metodo:          timerAtt                                            */
-/* Descricao:               Callback da interrupcao gerada pelo timer ltpmr0    */
-/*                          para controlar os displays e demais elementos       */
-/*                          sensiveis ao tempo                                  */
+/* Nome do metodo:          readTemp                                            */
+/* Descricao:               Le o ADC que esta ligado ao sensor de temperatura e */
+/*                          usa a lookup table para retornar o valor em .C      */
 /*                                                                              */
 /* Parametros de entrada:   n/a                                                 */
 /*                                                                              */
