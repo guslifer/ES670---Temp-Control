@@ -18,13 +18,15 @@
 #include "lptmr.h"
 #include "lcd.h"
 #include "ledSwi.h"
+#include "pid.h"
 
 
 /********************************************************************************/
 /********************           DECLARANDO CONSTANTES       *********************/
 
-/*Temperatura padrao*/
+/*Temperatura*/
 #define TEMP_DEFAULT 30;
+extern const unsigned char tabela_temp[256];
 
 /*Tick base do timer*/
 #define TICK_4MS     4000;
@@ -42,6 +44,12 @@
 #define STATE_N     1
 #define STATE_9     2
 
+/*Constante de ganho do controlador*/ 
+
+#define FKP         0.001f
+#define FKI         0.002f
+#define FKD         0.003f
+
 /********************           FIM DAS CONSTANTES          *********************/
 /********************************************************************************/
 
@@ -55,13 +63,15 @@ unsigned char ucTempAlvo    = TEMP_DEFAULT;
 unsigned char ucTempAtual   = 0;
 unsigned char ucDezTempAlvo = 0;
 unsigned char ucUnTempAlvo  = 0;
+int           iRawTempAtual = 0;
 
 
 /*Variaveis para manter controle do tempo durante execucao*/
-unsigned char ucContador1   = 0;
-unsigned char ucSegundos    = 0;
-unsigned char ucMinutos     = 0;
-unsigned char ucIdleTime    = 0;
+unsigned char ucContador1       = 0;
+unsigned char ucContadorCtrl    = 0;
+unsigned char ucSegundos        = 0;
+unsigned char ucMinutos         = 0;
+unsigned char ucIdleTime        = 0;
 
 /*Variaveis relacionadas aos displays*/
 unsigned char ucD7Flag      = 0;
@@ -77,6 +87,22 @@ unsigned char ucLCDFrame    = 0;
 /*                                                                              */
 /* Parametros de saida:     n/a                                                 */
 /* **************************************************************************** */
+
+void readTemp(){ 
+
+    adc_initConvertion();
+    while(0 == adc_isAdcDone())
+    {
+        util_genDelay250us();
+    } 
+
+    iRawTempAtual = adc_getConvertionValue();
+    ucTempAtual   = tabela_temp[iRawTempAtual];
+}
+
+
+
+
 void timerAtt(){
 
     ucContador1++;
@@ -95,7 +121,14 @@ void timerAtt(){
 /* Parametros de saida:     n/a                                                 */
 /* **************************************************************************** */
 void checkTime(){
-    if(25 <= ucContador1){
+
+    if(25 <= ucContador1){ //A cada 100ms
+        ucContador1 = 0;
+        ucContadorCtrl++;
+    }
+
+
+    if(25 <= ucContador1){ //Acho que ta errado aqui
         ucContador1 = 0;
         ucSegundos++;
     }
@@ -152,6 +185,13 @@ void boardInit()
     /*Inicia um timer com tick de 4ms para atualizacao dos displays*/
     /*e controle de tempo interno do sistema*/
     tc_installLptmr0(TICK_4MS, timerAtt);
+
+    /*Inicia o controlador PID*/ 
+    pid_init();
+    pid_setKi(FKI);
+    pid_setKp(FKP);
+    pid_setKD(FKD);
+
 }
 
 
@@ -205,6 +245,7 @@ int main(void){
 
         /*ESTADO DE CONFIGURACAO DA TEMPERATURA ALVO*/
         case CONFIG:
+
             switch(ucSubestado1){
 
             /*ESTADO PARA CONFIGURACAO DO DIGITO DA DEZENA*/
@@ -433,11 +474,37 @@ int main(void){
 
         /*ESTADO DE CONTROLE DE TEMPERATURA*/
         case CONTROLE:
+
+            /*NOVA ATUALIZAÇÃO DE CONTROLE NECESSÁRIA*/
+            if(0 != ucContadorCtrl) { 
+
+                fDutyCycleHeater = pidUpdateDate(ucTempAtual, ucTempAlvo, fDutyCycleHeater); 
+                heater_PWMDuty(fDutyCycleHeater)
+            }
+            /*DEVE INDICAR SE A TEMPERATURA ESTA ACIMA OU ABAIXO DO ALVO*/
+            if(ucTempAtual > ucTempAlvo){ 
+                turnOffLED(2);
+                turnOffLED(3);  
+                turnOnLED(3);
+            }
+
+            else if(ucTempAtual < ucTempAlvo){  
+                turnOffLED(2);
+                turnOffLED(3);  
+                turnOnLED(2)
+            }
+            /*DEVE RETORNAR PARA O MENU DE CONFIGURACAO CASO O BOTAO OK SEJA PRESSIOANDO*/
+            if(1 == readSwitch(4)){
+                util_genDelay100ms();
+                ucSubestado1 = UNIDADE;
+                ucSubestado2 = STATE_0;
+                ucEstado = CONFIG;
+                break;
+            }
+
+        
             break;
 
-                //Numa mão ta o copção com whisky e red bull
-                // Na outra o lança perfume 
-                //encomendei mais um
         }
     }
 }
