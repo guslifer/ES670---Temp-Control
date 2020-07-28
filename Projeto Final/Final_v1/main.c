@@ -125,7 +125,7 @@ void checkTime(){
 /* **************************************************************************** */
 void showLCDdisp(unsigned char ucFrame){
 
-    switch
+    //bkabkabkakbakba
 
 }
 
