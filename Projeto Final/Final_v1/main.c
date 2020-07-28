@@ -7,7 +7,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo A. Dollevedo                    */
 /*   Criado em:              27/07/2020                                             */
-/*   Ultima revisao em:      27/07/2020                                             */
+/*   Ultima revisao em:      28/07/2020                                             */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */
@@ -19,17 +19,17 @@
 #include "lcd.h"
 #include "ledSwi.h"
 #include "pid.h"
+#include "display7seg.h"
 
 
 /********************************************************************************/
 /********************           DECLARANDO CONSTANTES       *********************/
 
 /*Temperatura*/
-#define TEMP_DEFAULT 30;
-extern const unsigned char tabela_temp[256];
+#define TEMP_DEFAULT 30
 
 /*Tick base do timer*/
-#define TICK_4MS     4000;
+#define TICK_4MS     4000
 
 /*Estados principais do sistema*/
 #define CONFIG      0
@@ -59,11 +59,15 @@ unsigned char ucSubestado1  = 0;
 unsigned char ucSubestado2  = 0;
 
 /*Variaveis referentes a temperatura*/
-unsigned char ucTempAlvo    = TEMP_DEFAULT;
-unsigned char ucTempAtual   = 0;
-unsigned char ucDezTempAlvo = 0;
-unsigned char ucUnTempAlvo  = 0;
+unsigned char ucTempAlvo        = TEMP_DEFAULT;
+unsigned char ucTempAtual       = 0;
+unsigned char ucDezTempAlvo     = 0;
+unsigned char ucUnTempAlvo      = 0;
+unsigned char ucUnTempAtual     = 0;
+unsigned char ucDezTempAtual    = 0;
+
 int           iRawTempAtual = 0;
+extern const unsigned char tabela_temp[256];
 
 
 /*Variaveis para manter controle do tempo durante execucao*/
@@ -76,6 +80,7 @@ unsigned char ucIdleTime        = 0;
 /*Variaveis relacionadas aos displays*/
 unsigned char ucD7Flag      = 0;
 unsigned char ucLCDFrame    = 1;
+unsigned char ucDisableD7   = 0;
 
 
 /* **************************************************************************** */
@@ -96,8 +101,10 @@ void readTemp(){
         util_genDelay250us();
     } 
 
-    iRawTempAtual = adc_getConvertionValue();
-    ucTempAtual   = tabela_temp[iRawTempAtual];
+    iRawTempAtual   = adc_getConvertionValue();
+    ucTempAtual     = tabela_temp[iRawTempAtual];
+    ucDezTempAtual  = ucTempAtual/10;
+    ucUnTempAtual   = ucTempAtual%10;
 }
 
 
@@ -219,11 +226,11 @@ void boardInit()
     /*Inicializa o display LCD*/
     lcd_initLcd();
 
-    /*Inicia um timer com tick de 4ms para atualizacao dos displays*/
+    /*Inicializa um timer com tick de 4ms para atualizacao dos displays*/
     /*e controle de tempo interno do sistema*/
     tc_installLptmr0(TICK_4MS, timerAtt);
 
-    /*Inicia o controlador PID*/ 
+    /*Inicializa o controlador PID para atuar sobre o aquecedor*/ 
     pid_init();
     pid_setKi(FKI);
     pid_setKp(FKP);
@@ -250,15 +257,19 @@ int main(void){
     ucSubestado1    = DEZENA;
     ucSubestado2    = STATE_0;
 
-    /*Tem que ser feita a atualizacao dos displays (LCD e D7S)*/
 
     while(1){
 
 
         checkTime();
 
-        if(0 != ucD7Flag){
-            /*TBD: EXIBE TEMPERATURA ATUAL*/
+        /*Atualiza o D7S quando há interrupcao && quando o LCD nao esta sendo operado*/
+        if(0 != ucD7Flag && 0 == ucDisableD7){
+            display7seg_writeSymbol(1, ucDezTempAtual);
+            display7seg_writeSymbol(2, ucUnTempAtual);
+            display7seg_writeSymbol(3, 20);
+            display7seg_writeSymbol(4, 'C'); // IMPLEMENTAR NO D7S ESCRITA DE LETRAS!
+
         }
 
         /*Atualiza o LCD com o frame correto*/
@@ -268,13 +279,13 @@ int main(void){
         /*Se o sistema fica inoperado por 2 minutos, uma temperatura padrao eh*/
         /*setada, e o sistema passa para o estado de CONTROLE*/
         if(2 == ucIdleTime){
-            ucIdleTime = 0;
-            ucTempAlvo = TEMP_DEFAULT;
-            ucDezTempAlvo = ucTempAlvo/10;
-            ucUnTempAlvo  = ucTempAlvo%10;
-            ucEstado = CONTROLE;
-            ucSubestado1 = DEZENA;
-            ucSubestado2 = STATE_0;
+            ucIdleTime      = 0;
+            ucTempAlvo      = TEMP_DEFAULT;
+            ucDezTempAlvo   = ucTempAlvo/10;
+            ucUnTempAlvo    = ucTempAlvo%10;
+            ucEstado        = CONTROLE;
+            ucSubestado1    = DEZENA;
+            ucSubestado2    = STATE_0;
         }
 
         /*INICIA A MAQUINA DE ESTADOS DO SISTEMA*/
@@ -390,7 +401,6 @@ int main(void){
 
                     /*Caso "+" pressionado*/
                     else if(1 == readSwitch(3)){
-                        /*Nada acontece*/
                         util_genDelay100ms();
                         lcd_setCursor(LINE1,11);
                         lcd_writeData(ucDezTempAlvo+48);
