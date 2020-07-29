@@ -60,8 +60,8 @@ unsigned char ucSubestado1  = 0;
 unsigned char ucSubestado2  = 0;
 
 /*Variaveis referentes a temperatura*/
-unsigned char ucTempAlvo        = TEMP_DEFAULT;
-unsigned char ucTempAtual       = 0;
+ucTempAlvo        = TEMP_DEFAULT;
+ucTempAtual       = 0;
 unsigned char ucDezTempAlvo     = 0;
 unsigned char ucUnTempAlvo      = 0;
 unsigned char ucUnTempAtual     = 0;
@@ -203,6 +203,10 @@ void boardInit()
     /*Inicializa a comunicação UART*/ 
     UART0_init(); 
 
+    /*Inicializa o PWM, o ventilador e o aquecedor*/
+    PWM_init();
+    coolerfan_init(); 
+    heater_init();
 }
 
 
@@ -533,21 +537,26 @@ int main(void){
                 fDutyCycleHeater = pidUpdateDate(ucTempAtual, ucTempAlvo, fDutyCycleHeater); 
                 heater_PWMDuty(fDutyCycleHeater)
             }
-            /*DEVE INDICAR SE A TEMPERATURA ESTA ACIMA, ABAIXO OU IGUAL AO ALVO*/
+            /*DEVE INDICAR SE A TEMPERATURA ESTA ACIMA, ABAIXO OU IGUAL AO ALVO E QUANDO LIGAR O COOLER*/
             if(ucTempAtual > ucTempAlvo){ 
                 turnOffLED(2);
                 turnOffLED(3);  
                 turnOnLED(3);
+                coolerfan_PWMDuty(0.5);
+
             }
 
             else if(ucTempAtual < ucTempAlvo){  
                 turnOffLED(2);
                 turnOffLED(3);  
                 turnOnLED(2)
+                coolerfan_PWMDuty(0);
             }
+
             else if(ucTempAtual == ucTempAlvo){  
                 turnOnLED(2);
-                turnOnED(3);  
+                turnOnED(3);
+                coolerfan_PWMDuty(0);  
             }
 
             /*DEVE RETORNAR PARA O MENU DE CONFIGURACAO CASO O BOTAO OK SEJA PRESSIOANDO*/

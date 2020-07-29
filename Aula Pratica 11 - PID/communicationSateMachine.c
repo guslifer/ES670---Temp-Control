@@ -7,12 +7,15 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              21/05/2020                                             */
-/*   Ultima revisao em:      25/07/2020                                             */
+/*   Ultima revisao em:      28/07/2020                                             */
 /* ******************************************************************************** */
 
 /*REVISAO:*/
 /*ALTERADO O FUNCIONAMENTO DA FUNCAO "setParam"*/
 /*ALTERADA AS -VARIAVEIS DE TESTE- */
+
+/*Revisão: 28/07/2020 23:18*/ 
+/*Inserido a possibilidade de setar os parametros de ganho Kp, Ki e Kd*/
 
 /* Comandos utilizados (dicionario): 
    "#gt;" Get valor de temperatura atual 
@@ -23,6 +26,11 @@
    "#st<N>;" Set Temperatura Máxima desejada para controle, onde N é qualquer número de até de 7 byte. 
    "#sc<N>;" Set duty cycle do cooler, onde N é qualquer número de até de 7 bytes.
    "#sh<N>;" Set duty cycle do heater, onde N é qualquer número de até de 7 bytes.
+   "#sp<N>;" Set ganho prporcional do controlador PID, onde N é qualquer número de até 7 bytes.
+   "#si<N>;" Set ganho integrativo do controlador PID, onde N é qualquer número de até 7 bytes.
+   "#sd<N>;" Set ganho derivativo do controlador PID, onde N é qualquer número de até 7 bytes.
+
+
 
    "<#a<p>;" Respostas do parametro solicitado, onde p pode ser t,c ou h. 
 
@@ -31,6 +39,8 @@
 */
 
 #include "aquecedorECooler.h"
+#include "variaveis_globais.h"
+#include <stdlib.h>
 
 
 
@@ -78,6 +88,18 @@ void returnParam(unsigned char ucParam){
             debug_printf("#a%c%c%c%c;", fHeaterDutyTest[0], fHeaterDutyTest[1] ,fHeaterDutyTest[2], fHeaterDutyTest[3]);
             break;
 
+        case 'p':
+            debug_printf("#a%f;", fKp);
+            break;
+
+        case 'i':
+            debug_printf("#a%f;", fKi);
+            break;
+
+        case 'd':
+            debug_printf("#a%f;", fKd);
+            break;
+
     }
 
 
@@ -100,6 +122,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
 
     unsigned char ucContador = 0;
     unsigned char ucFlag = 0;
+    unsigned char ucStrValue = "0,00";
     float fAux = 0;
 
     switch(ucParam){
@@ -177,7 +200,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             ucFlag      = 0;
             fAux        = 0;
             while('\0' != ucValue[ucContador]){
-                if('1' == ucValue[0]){
+                if('1' == ucValue[0]){ //Seria melhor generalizar para qualquer valor diferente de zero?
                     heater_PWMDuty(0.5);
                     break;
                 }
@@ -206,6 +229,82 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             }
         
             break;
+
+        case 'p':
+
+       
+            ucContador  = 0;
+            fAux        = 0;
+
+            while('\0' != ucValue[ucContador]){
+
+                if(',' != ucValue[ucContador]){
+                    ucStrValue[ucContador] = ucValue[ucContador]
+                }
+                //Converte virgula para ponto
+                else{ 
+
+                    ucStrValue[ucContador] = '.';
+
+                }
+                ucContador++;
+            }
+
+            fAux = strtof(ucStrValue, NULL); 
+            fKp = fAux;
+
+            break;
+
+        case 'i':
+
+       
+            ucContador  = 0;
+            fAux        = 0;
+
+            while('\0' != ucValue[ucContador]){
+
+                if(',' != ucValue[ucContador]){
+                    ucStrValue[ucContador] = ucValue[ucContador]
+                }
+                //Converte virgula para ponto
+                else{ 
+
+                    ucStrValue[ucContador] = '.';
+
+                }
+                ucContador++;
+            }
+
+            fAux = strtof(ucStrValue, NULL); 
+            fKi = fAux;
+
+            break;
+
+        case 'd':
+
+       
+            ucContador  = 0;
+            fAux        = 0;
+
+            while('\0' != ucValue[ucContador]){
+
+                if(',' != ucValue[ucContador]){
+                    ucStrValue[ucContador] = ucValue[ucContador]
+                }
+                //Converte virgula para ponto
+                else{ 
+
+                    ucStrValue[ucContador] = '.';
+
+                }
+                ucContador++;
+            }
+
+            fAux = strtof(ucStrValue, NULL); 
+            fKd = fAux;
+
+            break;
+        
     }
 
 }
@@ -247,7 +346,7 @@ void processByteCommUART(unsigned char ucCmdByte){
                     
 
                 case GET:
-                    if('t' == ucCmdByte || 'c' == ucCmdByte || 'h' == ucCmdByte){
+                    if('t' == ucCmdByte || 'c' == ucCmdByte || 'h' == ucCmdByte || 'i' == ucCmdByte || 'p' == ucCmdByte || 'd' == ucCmdByte){
                         ucParam = ucCmdByte;
                         ucCurrentState = PARAM;
                     }
@@ -258,7 +357,7 @@ void processByteCommUART(unsigned char ucCmdByte){
                     break;
 
                 case SET:
-                    if('t' == ucCmdByte || 'b' == ucCmdByte || 'c' == ucCmdByte || 'h' == ucCmdByte){
+                    if('t' == ucCmdByte || 'b' == ucCmdByte || 'c' == ucCmdByte || 'h' == ucCmdByte || 'p' == ucCmdByte || 'i' == ucCmdByte || 'd' == ucCmdByte){
                         ucParam = ucCmdByte;
                         ucValueCounter = 0;
                         ucCurrentState = VALUE;
