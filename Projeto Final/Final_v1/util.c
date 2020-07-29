@@ -143,9 +143,10 @@ void util_genDelay100ms(void)
 /* **************************************************************************** */
 void extrai_digito(unsigned int numero, unsigned char* digitos){
     
-    unsigned char i = 0;
-    unsigned int x = 1;
-    unsigned int sobra = 0;
+    unsigned char   i = 0;
+    unsigned int    x = 1;
+    unsigned int    sobra = 0;
+    unsigned char   cont = 0;
     
     /*Ja inicializa cada digito com "0" (tabela ASCII)*/
     digitos[0] = 48;
@@ -159,20 +160,24 @@ void extrai_digito(unsigned int numero, unsigned char* digitos){
         i++;
     }
     
+    /*Arrumando x, ja que ele sai 10x maior do while anterior */
     x /= 10;
     
     /*Divide por uma potencia de 10 para sobrar um digito so*/
     /*Extrai o digito e armazena no vetor +48 (ASCII)       */
-    while(i > 0){
+    while(i > 0){ // "i" contem a quantidade de digitos do numero
+
+        /*Digito mais a esquerda do numero*/
         sobra = numero/x;
-        digitos[4-i] = (sobra + 48);
+
+
+        digitos[cont] = (sobra + 48);
         
         numero -= (sobra*x);
         x /= 10;
         
-        
-        
         i--;
+        cont++;
         
     }
 
