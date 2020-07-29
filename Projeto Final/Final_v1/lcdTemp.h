@@ -49,3 +49,5 @@ void showLCDdisp(unsigned char ucFrame);
 /* Parametros de saida:     n/a                                                 */
 /* **************************************************************************** */
 void attTempAlvo(unsigned char ucDezena, unsigned char ucUnidade);
+
+#endif SOURCES_LCDTEMP_H_
