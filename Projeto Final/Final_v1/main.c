@@ -549,7 +549,8 @@ int main(void){
 
 
             }
-            break;
+
+            break; /*Break switch Estado*/
 
         /*ESTADO DE CONTROLE DE TEMPERATURA*/
         case CONTROLE:
@@ -602,7 +603,7 @@ int main(void){
             }
 
 
-            break;
+            break; /*Break switch Estado*/
 
 
         }
