@@ -191,17 +191,21 @@ void boardInit()
 /* **************************************************************************** */
 int main(void){
 
+    /*Inicializa todos os perifericos do Kit*/
     boardInit();
 
 
+    /*Definiciao dos estados iniciais*/
     ucEstado        = CONFIG;
     ucSubestado1    = DEZENA;
     ucSubestado2    = STATE_0;
 
 
+    /*Loop infinito de operacao do sistema*/
     while(1){
 
 
+        /*Faz a contagem de tempo de acordo com a interrupcao programada*/
         checkTime();
 
         /*Atualiza o LCD com o frame correto*/
@@ -210,6 +214,7 @@ int main(void){
             ucDisableD7 = 1;
             showLCDdisp(ucLCDFrame);
             attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+            ucLCDFrame  = 0;
             ucDisableD7 = 0;
         }
 
@@ -218,7 +223,7 @@ int main(void){
             attDisp7Temp();
         }
 
-        /*Se o sistema fica inoperado por 2 minutos, uma temperatura padrao eh*/
+        /*Se o sistema fica inoperado por 2 minutos (no estado CONFIG), uma temperatura padrao eh*/
         /*setada, e o sistema passa para o estado de CONTROLE*/
         if(2 == ucIdleTime){
             ucIdleTime      = 0;
@@ -235,8 +240,19 @@ int main(void){
 
         /*ESTADO DE CONFIGURACAO DA TEMPERATURA ALVO*/
         case CONFIG:
+            /*LED 1 indica que o estado atual eh de configuracao*/
             turnOnLED(1);
             ucLCDFrame = 0;
+
+            if(0 == ucDezTempAlvo && DEZENA == ucSubestado1)
+                 ucSubestado2 = STATE_0;
+
+            else if(9 == ucDezTempAlvo && DEZENA == ucSubestado1)
+                ucSubestado2 = STATE_9;
+
+            else
+                if(DEZENA == ucSubestado1)
+                    ucSubestado2 = STATE_N;
 
             switch(ucSubestado1){
 
@@ -249,7 +265,16 @@ int main(void){
                     if(1 == readSwitch(4)){
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
-                        ucSubestado2 = STATE_0;
+
+                        if(0 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_0;
+
+                        else if(9 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_9;
+
+                        else
+                            ucSubestado2 = STATE_N;
+                        
                         break;
                     }
 
@@ -281,7 +306,15 @@ int main(void){
                     if(1 == readSwitch(4)){
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
-                        ucSubestado2 = STATE_0;
+
+                        if(0 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_0;
+
+                        else if(9 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_9;
+
+                        else
+                            ucSubestado2 = STATE_N;
                         break;
                     }
 
@@ -336,7 +369,16 @@ int main(void){
                     if(1 == readSwitch(4)){
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
-                        ucSubestado2 = STATE_0;
+
+                        if(0 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_0;
+
+                        else if(9 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_9;
+
+                        else
+                            ucSubestado2 = STATE_N;
+
                         break;
                     }
 
@@ -362,6 +404,10 @@ int main(void){
                         break;
                     }
                 }
+
+                break; /*Break do Subestado1*/
+
+
              /*ESTADO PARA CONFIGURACAO DO DIGITO DA UNIDADE*/
             case UNIDADE:
                 switch(ucSubestado2){
@@ -373,6 +419,7 @@ int main(void){
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
                         ucEstado     = CONTROLE;
+                        ucLCDFrame   = 2;
                         ucTempAlvo = ((10*ucDezTempAlvo)+ucUnTempAlvo);
                         break;
                     }
@@ -406,7 +453,13 @@ int main(void){
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
                         ucEstado     = CONTROLE;
+                        ucLCDFrame   = 2;
+
+                        if(9 == ucDezTempAlvo)
+                            ucUnTempAlvo = 0;
+
                         ucTempAlvo = ((10*ucDezTempAlvo)+ucUnTempAlvo);
+
                         break;
                     }
 
@@ -461,6 +514,11 @@ int main(void){
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
                         ucEstado     = CONTROLE;
+                        ucLCDFrame   = 2;
+
+                        if(9 == ucDezTempAlvo)
+                            ucUnTempAlvo = 0;
+
                         ucTempAlvo = ((10*ucDezTempAlvo)+ucUnTempAlvo);
                         break;
                     }
@@ -486,15 +544,19 @@ int main(void){
                         break;
                     }
                 }
+
+                break; /*Break do Subestado1*/
+
+
             }
             break;
 
         /*ESTADO DE CONTROLE DE TEMPERATURA*/
         case CONTROLE:
-            ucLCDFrame = 2;
-            /*Inicializa os 3 primeiros LEDs e o ultimo botao*/
-            /*Botao 4 => "/Reset"*/
+            /*Habilita as interrupcoes da porta Serial*/
             UART0_enableIRQ();
+
+            /*Apaga o led que indica o estado de configuracao*/
             turnOffLED(1);
 
             /*NOVA ATUALIZAÇÃO DE CONTROLE NECESSÁRIA*/
@@ -531,13 +593,18 @@ int main(void){
             /*DEVE RETORNAR PARA O MENU DE CONFIGURACAO CASO O BOTAO OK SEJA PRESSIOANDO*/
             if(1 == readSwitch(4)){
                 util_genDelay100ms();
-                ucSubestado1 = DEZENA;
-                ucSubestado2 = STATE_0;
-                ucEstado = CONFIG;
+                ucSubestado1    = DEZENA;
+                ucSubestado2    = STATE_0;
+                ucEstado        = CONFIG;
+                ucLCDFrame      = 1;
                 ledSwit_init(1, 0, 0, 0);
                 break;
             }
+
+
             break;
+
+
         }
     }
 }
