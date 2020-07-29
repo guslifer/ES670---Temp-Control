@@ -31,7 +31,7 @@
 */
 
 #include "aquecedorECooler.h"
-
+#include "variaveis_globais.h"
 
 
 #define IDLE    0

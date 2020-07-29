@@ -13,14 +13,15 @@
 /* Incluindo bibliotecas */
 #include "board.h"  
 #include "util.h"
-#include "adc.h"
 #include "lut_adc_3v3.h"
 #include "lptmr.h"
 #include "lcdTemp.h"
 #include "ledSwi.h"
 #include "pid.h"
-#include "display7seg.h"
+#include "display7Temp.h"
 #include "uart.h"
+#include "sensTemp.h"
+#include "variaveis_globais.h"
 
 
 /********************************************************************************/
@@ -29,7 +30,7 @@
 /*Temperatura*/
 #define TEMP_DEFAULT 30
 
-/*Tick base do timer*/
+/*Tick base do timer (em microsegundos [us])*/
 #define TICK_4MS     4000
 
 /*Estados principais do sistema*/
@@ -46,7 +47,6 @@
 #define STATE_9     2
 
 /*Constante de ganho do controlador*/ 
-
 #define FKP         0.001f
 #define FKI         0.002f
 #define FKD         0.003f
@@ -62,14 +62,10 @@ unsigned char ucSubestado2  = 0;
 /*Variaveis referentes a temperatura*/
 ucTempAlvo        = TEMP_DEFAULT;
 ucTempAtual       = 0;
-unsigned char ucDezTempAlvo     = 0;
-unsigned char ucUnTempAlvo      = 0;
-unsigned char ucUnTempAtual     = 0;
-unsigned char ucDezTempAtual    = 0;
-
-int           iRawTempAtual = 0;
-extern const unsigned char tabela_temp[256];
-
+ucDezTempAlvo     = 0;
+ucUnTempAlvo      = 0;
+ucUnTempAtual     = 0;
+ucDezTempAtual    = 0;
 
 /*Variaveis para manter controle do tempo durante execucao*/
 unsigned char ucContador1       = 0;
@@ -83,31 +79,6 @@ unsigned char ucIdleTime        = 0;
 unsigned char ucD7Flag      = 0;
 unsigned char ucLCDFrame    = 1;
 unsigned char ucDisableD7   = 0;
-
-
-/* **************************************************************************** */
-/* Nome do metodo:          readTemp                                            */
-/* Descricao:               Le o ADC conectado ao sensor de temperatura e       */
-/*                          converte o valor pela lookup table em graus Celsius */
-/*                                                                              */
-/* Parametros de entrada:   n/a                                                 */
-/*                                                                              */
-/* Parametros de saida:     n/a                                                 */
-/* **************************************************************************** */
-void readTemp(){ 
-
-    adc_initConvertion();
-    while(0 == adc_isAdcDone())
-    {
-        util_genDelay250us();
-    } 
-
-    iRawTempAtual   = adc_getConvertionValue();
-    ucTempAtual     = tabela_temp[iRawTempAtual];
-    ucDezTempAtual  = ucTempAtual/10;
-    ucUnTempAtual   = ucTempAtual%10;
-}
-
 
 
 /* **************************************************************************** */
@@ -125,7 +96,6 @@ void timerAtt(){
     ucContador1++;
     ucContador2++;
     ucD7Flag = 1;
-
 }
 
 
@@ -161,9 +131,6 @@ void checkTime(){
             ucIdleTime++;
         }
     }
-
-
-
 }
 
 
@@ -183,9 +150,12 @@ void boardInit()
     /*Botao 2 => "-"; Botao 3 => "+"; Botao 4 => "OK/Reset"*/
     ledSwit_init(1, 0, 0, 0);
 
+    /*Inicializa o ADC para leitura do sensor de temperatura*/
+    sensTemp_init();
+
     /*Inicializa o Display de 7 segmentos*/
     /*O D7S sera usado para exibir a temperatura atual*/
-    display7seg_init();
+    display7Temp_init();
 
     /*Inicializa o display LCD*/
     lcdTemp_init();
@@ -221,17 +191,21 @@ void boardInit()
 /* **************************************************************************** */
 int main(void){
 
+    /*Inicializa todos os perifericos do Kit*/
     boardInit();
 
 
+    /*Definiciao dos estados iniciais*/
     ucEstado        = CONFIG;
     ucSubestado1    = DEZENA;
     ucSubestado2    = STATE_0;
 
 
+    /*Loop infinito de operacao do sistema*/
     while(1){
 
 
+        /*Faz a contagem de tempo de acordo com a interrupcao programada*/
         checkTime();
 
         /*Atualiza o LCD com o frame correto*/
@@ -240,19 +214,16 @@ int main(void){
             ucDisableD7 = 1;
             showLCDdisp(ucLCDFrame);
             attTempAlvo(ucDezTempAlvo, ucUnTempAlvo);
+            ucLCDFrame  = 0;
             ucDisableD7 = 0;
         }
 
         /*Atualiza o D7S quando há interrupcao && quando o LCD nao esta sendo operado*/
         if(0 != ucD7Flag && 0 == ucDisableD7){
-            display7seg_writeSymbol(1, ucDezTempAtual);
-            display7seg_writeSymbol(2, ucUnTempAtual);
-            display7seg_writeSymbol(3, 20);
-            display7seg_writeChar(4, 'c');
-
+            attDisp7Temp();
         }
 
-        /*Se o sistema fica inoperado por 2 minutos, uma temperatura padrao eh*/
+        /*Se o sistema fica inoperado por 2 minutos (no estado CONFIG), uma temperatura padrao eh*/
         /*setada, e o sistema passa para o estado de CONTROLE*/
         if(2 == ucIdleTime){
             ucIdleTime      = 0;
@@ -269,8 +240,19 @@ int main(void){
 
         /*ESTADO DE CONFIGURACAO DA TEMPERATURA ALVO*/
         case CONFIG:
+            /*LED 1 indica que o estado atual eh de configuracao*/
             turnOnLED(1);
             ucLCDFrame = 0;
+
+            if(0 == ucDezTempAlvo && DEZENA == ucSubestado1)
+                 ucSubestado2 = STATE_0;
+
+            else if(9 == ucDezTempAlvo && DEZENA == ucSubestado1)
+                ucSubestado2 = STATE_9;
+
+            else
+                if(DEZENA == ucSubestado1)
+                    ucSubestado2 = STATE_N;
 
             switch(ucSubestado1){
 
@@ -283,7 +265,16 @@ int main(void){
                     if(1 == readSwitch(4)){
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
-                        ucSubestado2 = STATE_0;
+
+                        if(0 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_0;
+
+                        else if(9 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_9;
+
+                        else
+                            ucSubestado2 = STATE_N;
+                        
                         break;
                     }
 
@@ -315,7 +306,15 @@ int main(void){
                     if(1 == readSwitch(4)){
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
-                        ucSubestado2 = STATE_0;
+
+                        if(0 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_0;
+
+                        else if(9 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_9;
+
+                        else
+                            ucSubestado2 = STATE_N;
                         break;
                     }
 
@@ -370,7 +369,16 @@ int main(void){
                     if(1 == readSwitch(4)){
                         util_genDelay100ms();
                         ucSubestado1 = UNIDADE;
-                        ucSubestado2 = STATE_0;
+
+                        if(0 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_0;
+
+                        else if(9 == ucUnTempAlvo)
+                            ucSubestado2 = STATE_9;
+
+                        else
+                            ucSubestado2 = STATE_N;
+
                         break;
                     }
 
@@ -396,6 +404,10 @@ int main(void){
                         break;
                     }
                 }
+
+                break; /*Break do Subestado1*/
+
+
              /*ESTADO PARA CONFIGURACAO DO DIGITO DA UNIDADE*/
             case UNIDADE:
                 switch(ucSubestado2){
@@ -407,6 +419,7 @@ int main(void){
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
                         ucEstado     = CONTROLE;
+                        ucLCDFrame   = 2;
                         ucTempAlvo = ((10*ucDezTempAlvo)+ucUnTempAlvo);
                         break;
                     }
@@ -440,7 +453,13 @@ int main(void){
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
                         ucEstado     = CONTROLE;
+                        ucLCDFrame   = 2;
+
+                        if(9 == ucDezTempAlvo)
+                            ucUnTempAlvo = 0;
+
                         ucTempAlvo = ((10*ucDezTempAlvo)+ucUnTempAlvo);
+
                         break;
                     }
 
@@ -495,6 +514,11 @@ int main(void){
                         ucSubestado1 = DEZENA;
                         ucSubestado2 = STATE_0;
                         ucEstado     = CONTROLE;
+                        ucLCDFrame   = 2;
+
+                        if(9 == ucDezTempAlvo)
+                            ucUnTempAlvo = 0;
+
                         ucTempAlvo = ((10*ucDezTempAlvo)+ucUnTempAlvo);
                         break;
                     }
@@ -520,15 +544,20 @@ int main(void){
                         break;
                     }
                 }
+
+                break; /*Break do Subestado1*/
+
+
             }
-            break;
+
+            break; /*Break switch Estado*/
 
         /*ESTADO DE CONTROLE DE TEMPERATURA*/
         case CONTROLE:
-            ucLCDFrame = 2;
-            /*Inicializa os 3 primeiros LEDs e o ultimo botao*/
-            /*Botao 4 => "/Reset"*/
+            /*Habilita as interrupcoes da porta Serial*/
             UART0_enableIRQ();
+
+            /*Apaga o led que indica o estado de configuracao*/
             turnOffLED(1);
 
             /*NOVA ATUALIZAÇÃO DE CONTROLE NECESSÁRIA*/
@@ -537,7 +566,8 @@ int main(void){
                 fDutyCycleHeater = pidUpdateDate(ucTempAtual, ucTempAlvo, fDutyCycleHeater); 
                 heater_PWMDuty(fDutyCycleHeater)
             }
-            /*DEVE INDICAR SE A TEMPERATURA ESTA ACIMA, ABAIXO OU IGUAL AO ALVO E QUANDO LIGAR O COOLER*/
+
+            /*INDICACAO VISUAL SE A TEMPERATURA ESTA ACIMA DO SETPOINT*/
             if(ucTempAtual > ucTempAlvo){ 
                 turnOffLED(2);
                 turnOffLED(3);  
@@ -546,6 +576,7 @@ int main(void){
 
             }
 
+            /*INDICACAO VISUAL SE A TEMPERATURA ESTA ABAIXO DO SETPOINT*/
             else if(ucTempAtual < ucTempAlvo){  
                 turnOffLED(2);
                 turnOffLED(3);  
@@ -553,6 +584,7 @@ int main(void){
                 coolerfan_PWMDuty(0);
             }
 
+            /*INDICACAO VISUAL SE A TEMPERATURA ESTA NO SETPOINT*/
             else if(ucTempAtual == ucTempAlvo){  
                 turnOnLED(2);
                 turnOnED(3);
@@ -562,13 +594,18 @@ int main(void){
             /*DEVE RETORNAR PARA O MENU DE CONFIGURACAO CASO O BOTAO OK SEJA PRESSIOANDO*/
             if(1 == readSwitch(4)){
                 util_genDelay100ms();
-                ucSubestado1 = DEZENA;
-                ucSubestado2 = STATE_0;
-                ucEstado = CONFIG;
+                ucSubestado1    = DEZENA;
+                ucSubestado2    = STATE_0;
+                ucEstado        = CONFIG;
+                ucLCDFrame      = 1;
                 ledSwit_init(1, 0, 0, 0);
                 break;
             }
-            break;
+
+
+            break; /*Break switch Estado*/
+
+
         }
     }
 }

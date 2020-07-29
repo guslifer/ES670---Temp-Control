@@ -5,9 +5,9 @@
 /*   Descricao:             Funcoes para operar o LCD uteis no contexto do projeto  */
 /*	 						do controlador de temperatura 							*/
 /*                                                                                  */
-/*   Autores:               Gustavo Lino e Giacomo A. Dollevedo                    */
-/*   Criado em:             28/07/2020                                             */
-/*   Ultima revisao em:     28/07/2020                                             */
+/*   Autores:               Gustavo Lino e Giacomo A. Dollevedo                     */
+/*   Criado em:             28/07/2020                                              */
+/*   Ultima revisao em:     28/07/2020                                              */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */
