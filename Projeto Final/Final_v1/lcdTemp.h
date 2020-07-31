@@ -50,4 +50,4 @@ void showLCDdisp(unsigned char ucFrame);
 /* **************************************************************************** */
 void attTempAlvo(unsigned char ucDezena, unsigned char ucUnidade);
 
-#endif SOURCES_LCDTEMP_H_
+#endif /*SOURCES_LCDTEMP_H_*/

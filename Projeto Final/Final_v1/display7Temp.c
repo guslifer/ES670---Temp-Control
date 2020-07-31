@@ -24,7 +24,7 @@
 /* ******************************************************************************** */
 void display7Temp_init(void){
 
-	display7Seg_init();
+	display7seg_init();
 
 }
 

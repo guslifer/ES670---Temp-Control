@@ -22,7 +22,8 @@
 #include "uart.h"
 #include "sensTemp.h"
 #include "variaveis_globais.h"
-
+#include "stdio.h"
+#include "aquecedorECooler.h"
 
 /********************************************************************************/
 /********************           DECLARANDO CONSTANTES       *********************/
@@ -59,13 +60,6 @@ unsigned char ucEstado      = 0;
 unsigned char ucSubestado1  = 0;
 unsigned char ucSubestado2  = 0;
 
-/*Variaveis referentes a temperatura*/
-ucTempAlvo        = TEMP_DEFAULT;
-ucTempAtual       = 0;
-ucDezTempAlvo     = 0;
-ucUnTempAlvo      = 0;
-ucUnTempAtual     = 0;
-ucDezTempAtual    = 0;
 
 /*Variaveis para manter controle do tempo durante execucao*/
 unsigned char ucContador1       = 0;
@@ -148,7 +142,7 @@ void boardInit()
 
     /*Inicializa o primeiro LED e os 3 ultimos botoes*/
     /*Botao 2 => "-"; Botao 3 => "+"; Botao 4 => "OK/Reset"*/
-    ledSwit_init(1, 0, 0, 0);
+	ledSwi_init(1, 0, 0, 0);
 
     /*Inicializa o ADC para leitura do sensor de temperatura*/
     sensTemp_init();
@@ -166,11 +160,11 @@ void boardInit()
 
     /*Inicializa o controlador PID para atuar sobre o aquecedor*/ 
     pid_init();
-    pid_setKi(FKI);
-    pid_setKp(FKP);
-    pid_setKD(FKD);
+    pid_setKi(fKi);
+    pid_setKp(fKp);
+    pid_setKd(fKp);
 
-    /*Inicializa a comunicação UART*/ 
+    /*Inicializa a comunicaÃ§Ã£o UART*/
     UART0_init(); 
 
     /*Inicializa o PWM, o ventilador e o aquecedor*/
@@ -218,7 +212,7 @@ int main(void){
             ucDisableD7 = 0;
         }
 
-        /*Atualiza o D7S quando há interrupcao && quando o LCD nao esta sendo operado*/
+        /*Atualiza o D7S quando hÃ¡ interrupcao && quando o LCD nao esta sendo operado*/
         if(0 != ucD7Flag && 0 == ucDisableD7){
             attDisp7Temp();
         }
@@ -560,11 +554,11 @@ int main(void){
             /*Apaga o led que indica o estado de configuracao*/
             turnOffLED(1);
 
-            /*NOVA ATUALIZAÇÃO DE CONTROLE NECESSÁRIA*/
+            /*NOVA ATUALIZAÃ‡ÃƒO DE CONTROLE NECESSÃ�RIA*/
             if(0 != ucContadorCtrl) { 
 
-                fDutyCycleHeater = pidUpdateDate(ucTempAtual, ucTempAlvo, fDutyCycleHeater); 
-                heater_PWMDuty(fDutyCycleHeater)
+            	fDutyCycle_Heater = pidUpdateData(ucTempAtual, ucTempAlvo, fDutyCycle_Heater);
+                heater_PWMDuty(fDutyCycle_Heater);
             }
 
             /*INDICACAO VISUAL SE A TEMPERATURA ESTA ACIMA DO SETPOINT*/
@@ -580,14 +574,14 @@ int main(void){
             else if(ucTempAtual < ucTempAlvo){  
                 turnOffLED(2);
                 turnOffLED(3);  
-                turnOnLED(2)
+                turnOnLED(2);
                 coolerfan_PWMDuty(0);
             }
 
             /*INDICACAO VISUAL SE A TEMPERATURA ESTA NO SETPOINT*/
             else if(ucTempAtual == ucTempAlvo){  
                 turnOnLED(2);
-                turnOnED(3);
+                turnOnLED(3);
                 coolerfan_PWMDuty(0);  
             }
 
@@ -598,7 +592,7 @@ int main(void){
                 ucSubestado2    = STATE_0;
                 ucEstado        = CONFIG;
                 ucLCDFrame      = 1;
-                ledSwit_init(1, 0, 0, 0);
+                ledSwi_init(1, 0, 0, 0);
                 break;
             }
 

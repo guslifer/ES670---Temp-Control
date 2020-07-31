@@ -34,4 +34,4 @@ void display7Temp_init(void);
 /* ******************************************************************************** */
 void attDisp7Temp(void);
 
-#endif SOURCES_D7TEMP_H_
+#endif /*SOURCES_D7TEMP_H_*/
