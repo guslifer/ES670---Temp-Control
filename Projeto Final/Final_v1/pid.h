@@ -95,9 +95,11 @@ float pid_getKd(void);
 /*                     the sensor                     */
 /*                     fReferenceValue: Value used as */
 /*                     control reference              */
+/*					   fDutyCycleHeater: Value of the */
+/*					   heater duty cycle			  */
 /* Output params:      float: New Control effort     */
 /* ************************************************** */
-float pidUpdateData(float fSensorValue, float fReferenceValue);
+float pidUpdateData(unsigned char ucTempAtual, float fSetValue, float fDutyCycleHeater);
 
 
 #endif /* SOURCES_CONTROLLER_PID_H_ */

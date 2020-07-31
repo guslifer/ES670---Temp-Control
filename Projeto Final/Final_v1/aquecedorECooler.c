@@ -73,6 +73,8 @@ void PWM_init(void){
 
     TPM1_CNT &= CLEAR_16; 
 
+    coolerfan_init(); 
+    heater_init();
 
 
 }

@@ -10,9 +10,9 @@
 /*   Criado em:              29/03/2020                                             */
 /*   Ultima revisão em:      03/04/2020                                             */
 /* ******************************************************************************** */
-#ifndef ledSwi.h
+#ifndef SOURCES_LEDSWI_
 
-#define ledSwi.h
+#define SOURCES_LEDSWI_
 
 /* ******************************************************************************** */
 /* Nome do metodo:          ledSwi_init                                             */ 
@@ -102,4 +102,4 @@ void toggleLED(int n);
 
 
 
-#endif /* ledSwi.h */
+#endif

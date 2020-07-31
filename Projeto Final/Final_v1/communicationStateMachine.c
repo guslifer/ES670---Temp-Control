@@ -122,7 +122,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
 
     unsigned char ucContador = 0;
     unsigned char ucFlag = 0;
-    unsigned char ucStrValue = "0,00";
+    unsigned char ucStrValue[5] = "0,00\0";
     float fAux = 0;
 
     switch(ucParam){
@@ -157,7 +157,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             ucUnTempAlvo = ucTempAlvo%10;
             break;
 
-//Habilitar ou desabilitar os botões da interface do microcontrolador.
+        //Habilitar ou desabilitar os botões da interface do microcontrolador.
         case 'b':
             /* Espera ucValue num formato especifico*/
             if('\0' != ucValue[4]) {
@@ -232,14 +232,15 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
                 while(fAux > 0)
                     fAux = fAux/10;
 
-                if(0.5 < fAux)
+                if(0.5 < fAux){
                     heater_PWMDuty(0.5);
                     fDutyCycle_Heater = 0.5;
+                }
                 
-                else
+                else{
                     heater_PWMDuty(fAux);
                     fDutyCycle_Heater = fAux;
-            }
+                }
         
             break;
 
@@ -252,7 +253,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             while('\0' != ucValue[ucContador]){
 
                 if(',' != ucValue[ucContador]){
-                    ucStrValue[ucContador] = ucValue[ucContador]
+                    ucStrValue[ucContador] = ucValue[ucContador];
                 }
                 //Converte virgula para ponto
                 else{ 
@@ -277,7 +278,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             while('\0' != ucValue[ucContador]){
 
                 if(',' != ucValue[ucContador]){
-                    ucStrValue[ucContador] = ucValue[ucContador]
+                    ucStrValue[ucContador] = ucValue[ucContador];
                 }
                 //Converte virgula para ponto
                 else{ 
@@ -302,7 +303,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             while('\0' != ucValue[ucContador]){
 
                 if(',' != ucValue[ucContador]){
-                    ucStrValue[ucContador] = ucValue[ucContador]
+                    ucStrValue[ucContador] = ucValue[ucContador];
                 }
                 //Converte virgula para ponto
                 else{ 
@@ -320,6 +321,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
         
     }
 
+}
 }
 
 

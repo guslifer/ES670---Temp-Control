@@ -36,4 +36,4 @@ void sensTemp_init(void);
 void readTemp(void);
 
 
-#endif SOURCES_SENSTEMP_
+#endif
