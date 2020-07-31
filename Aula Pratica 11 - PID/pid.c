@@ -114,13 +114,15 @@ float pid_getKd(void)
 /*                     the sensor                     */
 /*                     fReferenceValue: Value used as */
 /*                     control reference              */
+/*					   fDutyCycleHeater: Value of the */
+/*					   heater duty cycle			  */
 /* Output params:      float: New Control effort     */
 /* ************************************************** */
 float pidUpdateData(unsigned char ucTempAtual, float fSetValue, float fDutyCycleHeater)
 {
 	float fError, fDifference, fOut;
 
-	fError = fSetValue - fSensorValue;
+	fError = fSetValue - ucTempAtual;
 	/*Devemos incrementar o erro apenas se não houver saturado o duty cycle evitando o wind up*/
 	if(fDutyCycleHeater < 1.0|| fDutyCycleHeater > 0.0){
 		pidConfig.fError_sum += fError;

@@ -12,11 +12,11 @@
 
 unsigned char ucTempAlvo 		= 30; 
 unsigned char ucTempAtual		= 0; 
-unsigned char ucDezTempAlvo     = 0;
+unsigned char ucDezTempAlvo     = 3;
 unsigned char ucUnTempAlvo      = 0;
 unsigned char ucUnTempAtual     = 0;
 unsigned char ucDezTempAtual    = 0;
-float fDutyCycle_Heater;
-float fKp;
-float fKi;
-float fKd;
+float fDutyCycle_Heater = 0;
+float fKp = 0;
+float fKi = 0;
+float fKd = 0;

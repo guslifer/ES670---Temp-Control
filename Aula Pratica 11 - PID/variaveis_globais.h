@@ -22,7 +22,7 @@ extern unsigned char ucDezTempAlvo;
 extern unsigned char ucUnTempAlvo;
 extern unsigned char ucUnTempAtual;
 extern unsigned char ucDezTempAtual;
-extern float fCycle_Heater;;
+extern float fDutyCycle_Heater;
 extern float fKp;
 extern float fKi;
 extern float fKd;

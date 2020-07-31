@@ -16,12 +16,16 @@
 #include "adc.h"
 #include "lut_adc_3v3.h"
 #include "lptmr.h"
-#include "lcdTemp.h"
+#include "lcd.h"
 #include "ledSwi.h"
 #include "pid.h"
 #include "display7seg.h"
 #include "uart.h"
-
+#include "variaveis_globais.h"
+#include "sensTemp.h"
+#include "aquecedorECooler.h"
+#include "communicationStateMachine.h"
+#include "stdio.h"
 
 /********************************************************************************/
 /********************           DECLARANDO CONSTANTES       *********************/
@@ -60,8 +64,6 @@ unsigned char ucSubestado1  = 0;
 unsigned char ucSubestado2  = 0;
 
 /*Variaveis referentes a temperatura*/
-ucTempAlvo        = TEMP_DEFAULT;
-ucTempAtual       = 0;
 unsigned char ucDezTempAlvo     = 0;
 unsigned char ucUnTempAlvo      = 0;
 unsigned char ucUnTempAtual     = 0;
@@ -84,30 +86,6 @@ unsigned char ucD7Flag      = 0;
 unsigned char ucLCDFrame    = 1;
 unsigned char ucDisableD7   = 0;
 unsigned char ucLCDFlag     = 0;
-
-
-/* **************************************************************************** */
-/* Nome do metodo:          readTemp                                            */
-/* Descricao:               Le o ADC conectado ao sensor de temperatura e       */
-/*                          converte o valor pela lookup table em graus Celsius */
-/*                                                                              */
-/* Parametros de entrada:   n/a                                                 */
-/*                                                                              */
-/* Parametros de saida:     n/a                                                 */
-/* **************************************************************************** */
-void readTemp(){ 
-
-    adc_initConvertion();
-    while(0 == adc_isAdcDone())
-    {
-        util_genDelay250us();
-    } 
-
-    iRawTempAtual   = adc_getConvertionValue();
-    ucTempAtual     = tabela_temp[iRawTempAtual];
-    ucDezTempAtual  = ucTempAtual/10;
-    ucUnTempAtual   = ucTempAtual%10;
-}
 
 
 
@@ -172,14 +150,14 @@ void boardInit()
 
     /*Inicializa o primeiro LED e os 3 ultimos botoes*/
     /*Botao 2 => "-"; Botao 3 => "+"; Botao 4 => "OK/Reset"*/
-    ledSwit_init(1, 0, 0, 0);
+	ledSwi_init(1, 0, 0, 0);
 
     /*Inicializa o Display de 7 segmentos*/
     /*O D7S sera usado para exibir a temperatura atual*/
     display7seg_init();
 
     /*Inicializa o display LCD*/
-    lcdTemp_init();
+    lcd_initLcd();
 
     /*Inicializa um timer com tick de 4ms para atualizacao dos displays*/
     /*e controle de tempo interno do sistema*/
@@ -189,7 +167,7 @@ void boardInit()
     pid_init();
     pid_setKi(FKI);
     pid_setKp(FKP);
-    pid_setKD(FKD);
+    pid_setKd(FKD);
 
     /*Inicializa a comunicação UART*/ 
     UART0_init(); 
@@ -216,7 +194,7 @@ void boardInit()
 /* **************************************************************************** */
 
 void showLCDdisp(unsigned char ucFrame){
-    char cAux = 0;
+    char iAux = 0;
 
     switch(ucFrame){
         case 0:
@@ -246,9 +224,9 @@ void showLCDdisp(unsigned char ucFrame){
             unsigned char dch_digits[5];
             sprintf(dch_digits, "%g", fKp);
 
-            for(cAux=0; 5 >= cAux; cAux++){ 
-                lcd_setCursor(LINE1,(6+cAux));
-                lcd_writeData(dch_digits[cAux]);
+            for(iAux=0; 5 >= iAux; iAux++){
+                lcd_setCursor(LINE1,(6+iAux));
+                lcd_writeData(dch_digits[iAux]);
             }
 
 
@@ -263,23 +241,23 @@ void showLCDdisp(unsigned char ucFrame){
             // Converte o valor atual de ganho do controlador de float para char
             unsigned char Kp_digits[5];
             sprintf(Kp_digits, "%g", fKp);
-            for(cAux=0; 5 >= cAux; cAux++){ 
-                lcd_setCursor(LINE0,(3+cAux));
-                lcd_writeData(Kp_digits[cAux]);
+            for(iAux=0; 5 >= iAux; iAux++){
+                lcd_setCursor(LINE0,(3+iAux));
+                lcd_writeData(Kp_digits[iAux]);
             }
 
             unsigned char Kd_digits[5];
             sprintf(Kd_digits, "%g", fKd);
-            for(cAux=0; 5 >= cAux; cAux++){ 
-                lcd_setCursor(LINE0,(11+cAux));
-                lcd_writeData(Kd_digits[cAux]);
+            for(iAux=0; 5 >= iAux; iAux++){
+                lcd_setCursor(LINE0,(11+iAux));
+                lcd_writeData(Kd_digits[iAux]);
             }
             
             unsigned char Ki_digits[5];
             sprintf(Ki_digits, "%g", fKi);
-            for(cAux=0; 5 >= cAux; cAux++){ 
-                lcd_setCursor(LINE1,(3+cAux));
-                lcd_writeData(Ki_digits[cAux]);
+            for(iAux=0; 5 >= iAux; iAux++){
+                lcd_setCursor(LINE1,(3+iAux));
+                lcd_writeData(Ki_digits[iAux]);
             }
             break;
 
@@ -307,10 +285,9 @@ int main(void){
 
     while(1){
 
-        //cAux será usada para garantir que será enviados dados por 5s, este temp poderá ser alterado 
+        //iAux será usada para garantir que será enviados dados por 5s, este temp poderá ser alterado
         //Caso perceba-se que não é adequado para obter a curva desejada de resposta.
-        char cAux = 1250; 
-        ajuste = 1; 
+        int iAux = 1250;
 
         //Exibe as telas do LCD a cada 10s
         if(ucLCDFlag != 0){ 
@@ -330,13 +307,13 @@ int main(void){
         //observarmos a saída quando subirmos para seu valor máximo permitido de 50% 
             heater_PWMDuty(0.05); 
             //E aguardar um tempo de estabilização 
-            for(cAux = 0; 5 > cAux; cAux++){ 
-                util_genDelay100ms()
-                util_genDelay100ms()
+            for(iAux = 0; 5 > iAux; iAux++){
+                util_genDelay100ms();
+                util_genDelay100ms();
             }
         
 
-            while(0 != cAux) { // Envia 1250 dados de temperatura pela UART
+            while(0 != iAux) { // Envia 1250 dados de temperatura pela UART
 
                     readTemp();
                     //Envia dados para a UART 
@@ -349,16 +326,16 @@ int main(void){
                     processByteCommUART(';');
                     util_genDelay1ms();
 
-                    cAux--; //Diminui o número de vezes que enviará os dados
+                    iAux--; //Diminui o número de vezes que enviará os dados
 
             }
         }
 
     	checkTime(); 
     	if(0 != ucContadorCtrl){ 
-
-            fDutyCycleHeater = pidUpdateDate(ucTempAtual, ucTempAlvo, fDutyCycleHeater); 
-            heater_PWMDuty(fDutyCycleHeater)
+    		readTemp();
+    		fDutyCycle_Heater = pidUpdateData(ucTempAtual, ucTempAlvo, fDutyCycle_Heater);
+            heater_PWMDuty(fDutyCycle_Heater);
             ucContadorCtrl = 0;
     	}
     }

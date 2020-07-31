@@ -133,7 +133,7 @@ char readSwitch(int n){
 	    switch(n){
 	        case 1: 
 	            if(0 == cLedSwi1){
-	                if (uiPin1MaskEnable == GPIOA_PDIR & uiPin1MaskEnable){ 
+	                if (uiPin1MaskEnable == (GPIOA_PDIR & uiPin1MaskEnable)){
 	                    return 1;
 	                }
 	                else {
@@ -147,7 +147,7 @@ char readSwitch(int n){
 
 	        case 2:
 	            if(0 == cLedSwi2){ 
-	                if (uiPin2MaskEnable == GPIOA_PDIR & uiPin2MaskEnable){ 
+	                if (uiPin2MaskEnable == (GPIOA_PDIR & uiPin2MaskEnable)){
 	                    return 1;
 	                }
 	                else {
@@ -161,7 +161,7 @@ char readSwitch(int n){
 
 	        case 3: 
 	            if(0 == cLedSwi3){
-	                if (uiPin4MaskEnable == GPIOA_PDIR & uiPin4MaskEnable){ 
+	                if (uiPin4MaskEnable == (GPIOA_PDIR & uiPin4MaskEnable)){
 	                    return 1;
 	                }
 	                else {
@@ -175,7 +175,7 @@ char readSwitch(int n){
 
 	        case 4: 
 	            if(0 == cLedSwi4){
-	                if (uiPin5MaskEnable == GPIOA_PDIR & uiPin5MaskEnable){ 
+	                if (uiPin5MaskEnable == (GPIOA_PDIR & uiPin5MaskEnable)){
 	                    return 1;
 	                }
 	                else {
@@ -188,7 +188,7 @@ char readSwitch(int n){
 	        break;
 	        }
 	    }
-
+		return 0;
     }
 
 

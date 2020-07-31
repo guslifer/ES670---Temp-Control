@@ -21,6 +21,9 @@
 #define CMD_CURSOR2R        0x06 /* cursor to right */
 #define CMD_NO_CUR_NO_BLINK 0x38 /* no cursor, no blink */
 
+#define LINE0        0U
+#define LINE1        1U
+
 
 /* ******************************************************************************** */
 /* Nome do metodo:          lcd_initLcd                                             */ 
