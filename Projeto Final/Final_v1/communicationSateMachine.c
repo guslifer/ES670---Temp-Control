@@ -131,6 +131,14 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             while('\0' != ucValue[ucContador]){
             //Pega o valor da dezena                
                 if(0 == ucContador){ 
+                    if(9 == ucValue[ucContador]){
+                        //Limita em 90 a temperatura maxima
+                        fAux = 90; 
+                        ucTempAlvo = fAux;
+                        ucDezTempAlvo = 9;
+                        ucUnTempAlvo = 0;
+                        break;
+                    }
                     fAux = ucValue[ucContador] -48;
                     fAux = fAux*10;
                 }
@@ -145,6 +153,8 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
                 }
                 ucContador++;
             }
+            ucDezTempAlvo = ucTempAlvo/10;
+            ucUnTempAlvo = ucTempAlvo%10;
             break;
 
 //Habilitar ou desabilitar os botões da interface do microcontrolador.
@@ -202,6 +212,7 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
             while('\0' != ucValue[ucContador]){
                 if('1' == ucValue[0]){ //Seria melhor generalizar para qualquer valor diferente de zero?
                     heater_PWMDuty(0.5);
+                    fDutyCycle_Heater = 0.5;
                     break;
                 }
 
@@ -223,9 +234,11 @@ void setParam(unsigned char ucParam, unsigned char *ucValue){
 
                 if(0.5 < fAux)
                     heater_PWMDuty(0.5);
+                    fDutyCycle_Heater = 0.5;
                 
                 else
                     heater_PWMDuty(fAux);
+                    fDutyCycle_Heater = fAux;
             }
         
             break;

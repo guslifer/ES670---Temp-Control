@@ -83,6 +83,7 @@ unsigned char ucIdleTime        = 0;
 unsigned char ucD7Flag      = 0;
 unsigned char ucLCDFrame    = 1;
 unsigned char ucDisableD7   = 0;
+unsigned char ucLCDFlag     = 0;
 
 
 /* **************************************************************************** */
@@ -126,6 +127,7 @@ void timerAtt(){
     ucContador2++;
     ucD7Flag = 1;
 
+
 }
 
 
@@ -145,6 +147,13 @@ void checkTime(){
         ucContador2 = 0;
         ucContadorCtrl++;
     }
+
+    /*+1 a cada 10s*/
+    if(2500 <= ucContador1){
+        ucLCDFlag ++;
+
+    }
+    //zera o contador de controle de dados da uart
 
 }
 
@@ -189,7 +198,97 @@ void boardInit()
     PWM_init();
     coolerfan_init(); 
     heater_init();
+
+    /*Iniciar o sensTemp*/
+
+    sensTemp_init();
 }
+
+/* **************************************************************************** */
+/* Nome do metodo:          showLCDdisp                                         */
+/* Descricao:               Realiza a troca de mensagem no LCD de acordo com    */
+/*                          estado                                              */
+/*                                                                              */
+/* Parametros de entrada:   unsigned char ucFrame -> Indica o frame que sera    */
+/*                          mostrado                                            */
+/*                                                                              */
+/* Parametros de saida:     n/a                                                 */
+/* **************************************************************************** */
+
+void showLCDdisp(unsigned char ucFrame){
+    char cAux = 0;
+
+    switch(ucFrame){
+        case 0:
+            /*Nada*/
+            break;
+
+        case 1: // Exibe a temperatura atual, a temperatura alvo e o duty cycle do heater
+            lcd_setCursor(LINE0,0);
+            lcd_writeString("Temp  C Alvo   C");
+            lcd_setCursor(LINE1,0);
+            lcd_writeString("DCH  ");
+
+            //Insere temperatura Atual
+
+            lcd_setCursor(LINE0,(5));
+            lcd_writeData(ucDezTempAtual+48);
+            lcd_setCursor(LINE0,(6));
+            lcd_writeData(ucUnTempAtual+48);
+
+            //Insere temperatura Alvo
+            lcd_setCursor(LINE0,(14));
+            lcd_writeData(ucDezTempAlvo+48);
+            lcd_setCursor(LINE0,(15));
+            lcd_writeData(ucUnTempAlvo+48);
+
+            //Insere o Duty Cycle do Heater
+            unsigned char dch_digits[5];
+            sprintf(dch_digits, "%g", fKp);
+
+            for(cAux=0; 5 >= cAux; cAux++){ 
+                lcd_setCursor(LINE1,(6+cAux));
+                lcd_writeData(dch_digits[cAux]);
+            }
+
+
+            break;
+
+         case 2: // Exibe os ganhos programados para KP, KI e KD
+            lcd_setCursor(LINE0,0);
+            lcd_writeString("Kp      Kd      ");
+            lcd_setCursor(LINE1,0);
+            lcd_writeString("Ki      ");
+
+            // Converte o valor atual de ganho do controlador de float para char
+            unsigned char Kp_digits[5];
+            sprintf(Kp_digits, "%g", fKp);
+            for(cAux=0; 5 >= cAux; cAux++){ 
+                lcd_setCursor(LINE0,(3+cAux));
+                lcd_writeData(Kp_digits[cAux]);
+            }
+
+            unsigned char Kd_digits[5];
+            sprintf(Kd_digits, "%g", fKd);
+            for(cAux=0; 5 >= cAux; cAux++){ 
+                lcd_setCursor(LINE0,(11+cAux));
+                lcd_writeData(Kd_digits[cAux]);
+            }
+            
+            unsigned char Ki_digits[5];
+            sprintf(Ki_digits, "%g", fKi);
+            for(cAux=0; 5 >= cAux; cAux++){ 
+                lcd_setCursor(LINE1,(3+cAux));
+                lcd_writeData(Ki_digits[cAux]);
+            }
+            break;
+
+         default:
+            break;
+    }
+
+}
+
 
 
 /* **************************************************************************** */
@@ -203,20 +302,64 @@ void boardInit()
 /* **************************************************************************** */
 int main(void){
 
+
     boardInit();
 
     while(1){
+
+        //cAux será usada para garantir que será enviados dados por 5s, este temp poderá ser alterado 
+        //Caso perceba-se que não é adequado para obter a curva desejada de resposta.
+        char cAux = 1250; 
+        ajuste = 1; 
+
+        //Exibe as telas do LCD a cada 10s
+        if(ucLCDFlag != 0){ 
+            showLCDdisp(ucLCDFlag);
+            if(ucLCDFlag >= 2){ 
+                ucLCDFlag = 0;
+            }
+        }
+
+
+
+        //Aguarda-se a solcitação de ajuste pela UART do controlador
+        if(1 == readSwitch(4)){
+
+            util_genDelay100ms();
+        //Vamos inicialmente manter o aquecedor com um duty cyle proximo a zero para
+        //observarmos a saída quando subirmos para seu valor máximo permitido de 50% 
+            heater_PWMDuty(0.05); 
+            //E aguardar um tempo de estabilização 
+            for(cAux = 0; 5 > cAux; cAux++){ 
+                util_genDelay100ms()
+                util_genDelay100ms()
+            }
+        
+
+            while(0 != cAux) { // Envia 1250 dados de temperatura pela UART
+
+                    readTemp();
+                    //Envia dados para a UART 
+                    processByteCommUART('#');
+                    util_genDelay1ms();
+                    processByteCommUART('g');
+                    util_genDelay1ms();
+                    processByteCommUART('t');
+                    util_genDelay1ms();
+                    processByteCommUART(';');
+                    util_genDelay1ms();
+
+                    cAux--; //Diminui o número de vezes que enviará os dados
+
+            }
+        }
 
     	checkTime(); 
     	if(0 != ucContadorCtrl){ 
 
             fDutyCycleHeater = pidUpdateDate(ucTempAtual, ucTempAlvo, fDutyCycleHeater); 
             heater_PWMDuty(fDutyCycleHeater)
-
-
+            ucContadorCtrl = 0;
     	}
-
-
- 
-	}
+    }
 }

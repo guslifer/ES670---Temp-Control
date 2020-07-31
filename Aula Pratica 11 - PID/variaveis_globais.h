@@ -18,5 +18,13 @@
 
 extern unsigned char ucTempAlvo; 
 extern unsigned char ucTempAtual; 
+extern unsigned char ucDezTempAlvo;    
+extern unsigned char ucUnTempAlvo;
+extern unsigned char ucUnTempAtual;
+extern unsigned char ucDezTempAtual;
+extern float fCycle_Heater;;
+extern float fKp;
+extern float fKi;
+extern float fKd;
 
 #endif /* VARIAVEIS_GLOBAIS_H_*/

@@ -10,5 +10,13 @@
 /*   Ultima revisao em:      28/07/2020                                             */
 /* ******************************************************************************** */
 
-extern unsigned char ucTempAlvo; 
-extern unsigned char ucTempAtual; 
+unsigned char ucTempAlvo 		= 30; 
+unsigned char ucTempAtual		= 0; 
+unsigned char ucDezTempAlvo     = 0;
+unsigned char ucUnTempAlvo      = 0;
+unsigned char ucUnTempAtual     = 0;
+unsigned char ucDezTempAtual    = 0;
+float fDutyCycle_Heater;
+float fKp;
+float fKi;
+float fKd;
