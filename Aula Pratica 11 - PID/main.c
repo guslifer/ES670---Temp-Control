@@ -63,12 +63,6 @@ unsigned char ucEstado      = 0;
 unsigned char ucSubestado1  = 0;
 unsigned char ucSubestado2  = 0;
 
-/*Variaveis referentes a temperatura*/
-unsigned char ucDezTempAlvo     = 0;
-unsigned char ucUnTempAlvo      = 0;
-unsigned char ucUnTempAtual     = 0;
-unsigned char ucDezTempAtual    = 0;
-
 int           iRawTempAtual = 0;
 extern const unsigned char tabela_temp[256];
 
