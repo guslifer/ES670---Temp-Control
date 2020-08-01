@@ -1,30 +1,35 @@
-t = temp_out.time; 
-temp = temp_out.data;
+%%Encontra a tangente da resposta do sistema ao degrau
 
-plot(t, temp); 
-fy = interp1(t,temp,0:0.01:30)
-y = fy;
-tm = 0:30/(length(fy)-1):30;
-plot(tm, fy);
-d1y = gradient(y,tm);                                            % Numerical Derivative
-d2y = gradient(d1y,tm);                                          % Numerical Second Derivative
-t_infl = interp1(d1y, tm, max(d1y));                             % Find ‘t’ At Maximum Of First Derivative
-y_infl = interp1(tm, y, t_infl);                                 % Find ‘y’ At Maximum Of First Derivative
-slope  = interp1(tm, d1y, t_infl);                               % Slope Defined Here As Maximum Of First Derivative
-intcpt = y_infl - slope*t_infl;                                 % Calculate Intercept
-tngt = slope*tm + intcpt;                                        % Calculate Tangent Line
+t = temp_out.time;
+y = temp_out.data;
+%derivada numérica do vetor de pontos e ponto de inflexão
+yp = gradient(y,t); 
 
+[m, p] = max(yp);
+%equação da linha tangente ao ponto de inflexão 
 
-figure(1)
-plot(tm, y)
+tang = yp(p)*(t-t(p))+y(p);
+plot(t,y)
 hold on
-plot(tm, fy)
-% plot(t, d1y, '-.m',    t, d2y, '--c')                           % Plot Derivatives (Optional)
-plot(tm, tngt, '-r', 'LineWidth',1)                              % Plot Tangent Line
-% xlim([0 4])
-% ylim([0 1])
-% plot(t_infl, y_infl, 'bp')                                      % Plot Maximum Slope
-hold off
-grid
-% legend('y(t)', 'y(t) Fit', 'dy/dt', 'd^2y/dt^2', 'Tangent', 'Location','E')
-% axis([xlim    min(min(y),intcpt)  ceil(max(y))])
+plot(t, tang)
+plot(t(p),y(p),'ro')
+hold on
+%determinação dos parametros de ZN
+L_pos = knnsearch(tang, 0);
+L = t(L_pos);
+K = max(y);
+T_pos = knnsearch(tang, K);
+T = t(T_pos) - t(L_pos);
+
+plot(t(T_pos),tang(T_pos),'ro')
+
+%Precisamos verificar se a técnica se aplica 
+
+f_incontrol = L/T;
+
+%Ganhos do controlador PID
+
+Kp = 1.2*(T/(K*L)); 
+Ki = Kp*1/(2*L); 
+Kd = Kp*0.5*L;
+
