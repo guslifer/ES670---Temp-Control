@@ -4,7 +4,7 @@
 /*                   control the implemented PID controller          */
 /* Author name:      julioalvesMS, IagoAF, rBacurau                  */
 /* Creation date:    21jun2018                                       */
-/* Revision date:    27mai2020                                       */
+/* Revision date:    31jul2020                                       */
 /* ***************************************************************** */
 
 #include "pid.h"

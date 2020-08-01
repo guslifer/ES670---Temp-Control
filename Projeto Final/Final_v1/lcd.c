@@ -7,7 +7,7 @@
 /*                                                                                  */
 /*   Autores:                Gustavo Lino e Giacomo Dollevedo                       */
 /*   Criado em:              07/04/2020                                             */
-/*   Ultima revisao em:      27/07/2020                                             */
+/*   Ultima revisao em:      31/07/2020                                             */
 /* ******************************************************************************** */
 
 /*Correções implementadas: Pino 3 da GPIO não setado resolvido setando  do Pino 3 como GPIO 

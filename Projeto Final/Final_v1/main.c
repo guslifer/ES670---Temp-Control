@@ -74,6 +74,8 @@ unsigned char ucD7Flag      = 0;
 unsigned char ucLCDFrame    = 1;
 unsigned char ucDisableD7   = 0;
 
+/*Variavel para disparar o controle*/
+unsigned char ucAttCtrl     = 0;
 
 /* **************************************************************************** */
 /* Nome do metodo:          timerAtt                                            */
@@ -227,6 +229,12 @@ int main(void){
             ucEstado        = CONTROLE;
             ucSubestado1    = DEZENA;
             ucSubestado2    = STATE_0;
+        }
+
+        if(1 <= ucContadorCtrl){
+            readTemp();
+            ucContadorCtrl = 0;
+            ucAttCtrl++;
         }
 
         /*INICIA A MAQUINA DE ESTADOS DO SISTEMA*/
@@ -555,7 +563,7 @@ int main(void){
             turnOffLED(1);
 
             /*NOVA ATUALIZAÃ‡ÃƒO DE CONTROLE NECESSÃ�RIA*/
-            if(0 != ucContadorCtrl) { 
+            if(0 != ucAttCtrl) { 
 
             	fDutyCycle_Heater = pidUpdateData(ucTempAtual, ucTempAlvo, fDutyCycle_Heater);
                 heater_PWMDuty(fDutyCycle_Heater);

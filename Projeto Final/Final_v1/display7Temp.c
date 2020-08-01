@@ -7,7 +7,7 @@
 /*                                                                                  */
 /*   Autores:               Gustavo Lino e Giacomo A. Dollevedo                     */
 /*   Criado em:             29/07/2020                                              */
-/*   Ultima revisao em:     29/07/2020                                              */
+/*   Ultima revisao em:     31/07/2020                                              */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */

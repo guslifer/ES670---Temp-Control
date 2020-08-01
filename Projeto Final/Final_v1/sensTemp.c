@@ -7,13 +7,14 @@
 /*                                                                                  */
 /*   Autores:               Gustavo Lino e Giacomo A. Dollevedo                     */
 /*   Criado em:             29/07/2020                                              */
-/*   Ultima revisao em:     29/07/2020                                              */
+/*   Ultima revisao em:     31/07/2020                                              */
 /* ******************************************************************************** */
 
 /* Incluindo bibliotecas */
 #include "adc.h"
 #include "variaveis_globais.h"
 #include "lut_adc_3v3.h"
+#include "util.h"
 
 /* ******************************************************************************** */
 /* Nome do metodo:          sensTemp_init                                           */ 

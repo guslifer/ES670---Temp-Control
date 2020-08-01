@@ -9,7 +9,7 @@
 /*                                                                   */
 /* Author name:      dloubach                                        */
 /* Creation date:    09jan2015                                       */
-/* Revision date:    09jun2020                                       */
+/* Revision date:    31jul2020                                       */
 /* ***************************************************************** */
 
 #include "util.h"
